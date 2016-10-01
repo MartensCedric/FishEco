@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -17,7 +16,7 @@ import java.util.Random;
 public class Foid {
 
     private Vector2 desired;
-    private Vector2 pushingForce;
+    private Vector2 force;
     private Vector2 acceleration;
     private Vector2 location;
 
@@ -53,7 +52,7 @@ public class Foid {
 
         location = new Vector2(x,y);
         acceleration = new Vector2(0, 0.05f);
-        pushingForce = new Vector2(0,0);
+        force = new Vector2(0,0);
 
 
         this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
@@ -90,9 +89,9 @@ public class Foid {
 
     private void applyForce()
     {
-        pushingForce = pushingForce.add(acceleration);
-        pushingForce.limit(maxSpeed);
-        location = location.add(pushingForce);
+        force = force.add(acceleration);
+        force.limit(maxSpeed);
+        location = location.add(force);
 
         if(location.y > Gdx.graphics.getHeight() + height)
             location.y = location.y - Gdx.graphics.getHeight() - height*2;
