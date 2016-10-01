@@ -15,10 +15,13 @@ import java.util.Random;
  */
 public class Foid {
 
+
+    //TODO USE SHAPERENDERER
     private Vector2 desired;
     private Vector2 force;
-    private Vector2 acceleration;
+    private Vector2 velocity;
     private Vector2 location;
+    private Vector2 wind;
 
     private int width;
     private int height;
@@ -34,6 +37,7 @@ public class Foid {
     private TextureRegion textureRegion;
 
 	private float dir;
+    private float mass;
 
     public Foid(int x, int y, int width, int height, byte[] texture)
     {
@@ -50,9 +54,12 @@ public class Foid {
         createFishTexture();
         this.textureRegion = new TextureRegion(this.texture);
 
+        this.mass = 1f;
+
         location = new Vector2(x,y);
-        acceleration = new Vector2(0, 0.05f);
-        force = new Vector2(0,0);
+        velocity = new Vector2(0,0);
+        force = new Vector2(0, 0.05f);
+        wind = new Vector2(1f, -0.55f);
 
 
         this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
@@ -89,12 +96,19 @@ public class Foid {
 
     private void applyForce()
     {
-        force = force.add(acceleration);
+        velocity.scl(0);
+        force.add(0, 0.005f);
         force.limit(maxSpeed);
-        location = location.add(force);
+        velocity = velocity.add(force);
+        velocity = velocity.add(wind);
+        velocity.limit(maxSpeed);
+        location = location.add(velocity);
 
         if(location.y > Gdx.graphics.getHeight() + height)
             location.y = location.y - Gdx.graphics.getHeight() - height*2;
+
+        if(location.x > Gdx.graphics.getWidth() + height) //+Height on purpose
+            location.x = location.x - Gdx.graphics.getWidth() - height*2;
 
     }
 
@@ -121,5 +135,10 @@ public class Foid {
     public void setTextureRegion(TextureRegion textureRegion)
     {
         this.textureRegion = textureRegion;
+    }
+
+    public Vector2 getVelocity()
+    {
+        return velocity;
     }
 }

@@ -36,7 +36,6 @@ public class FoidsGame extends ApplicationAdapter {
 		GdxNativesLoader.load();
 
 
-
 		foidWidth = 5;
 		foidHeight = 9;
 

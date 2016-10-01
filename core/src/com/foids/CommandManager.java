@@ -1,10 +1,12 @@
 package com.foids;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.LinkedList;
 
@@ -18,6 +20,7 @@ public class CommandManager {
 
     private LinkedList<Foid> foidList;
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
 
     private Gdx2DPixmap hitboxPxMap2D;
     private Texture hitboxTexture;
@@ -28,31 +31,41 @@ public class CommandManager {
     private int originMarkerSize;
     private boolean origin;
 
+    private boolean direction;
+    private int lineSize;
+
     public CommandManager(FoidsGame game)
     {
         this.game = game;
 
-        this.hitbox = false;
-        this.origin = false;
-
         this.foidList = game.getFoidList();
         this.batch = game.getBatch();
+        this.shapeRenderer = new ShapeRenderer();
+
+
+        this.hitbox = false;
+        this.origin = false;
+        this.direction = false;
 
         this.originMarkerSize = 1;
+        this.lineSize = 3;
 
         createTextures();
     }
 
     /*
     Command list
-    Show Vectors (Direction only) (V)
-    Show Vectors w/ length (V toggle)
-    Show Pointing Position
+    Show Vectors (Direction only) (D)
+    Show Vector Length (L)
+    Show Pointing Position for Flow (Q)
     Show Flow Field (F)
     Show Foid Origin (O)
     Speed (Arrows)
-    Show ALL
-    Remove ALL
+	Show Parents (P)
+	Show Children (C)
+	Checkbox mode for hotkeys?
+    Show ALL (A)
+    Remove ALL (R)
     */
 
     public void draw()
@@ -74,6 +87,19 @@ public class CommandManager {
         origin = !origin;
     }
 
+    public void showAll()
+    {
+        hitbox = true;
+        origin = true;
+    }
+
+    public void removeAll()
+    {
+        hitbox = false;
+        origin = false;
+    }
+
+
     private void drawHitboxes()
     {
         for(Foid foid : foidList)
@@ -86,7 +112,7 @@ public class CommandManager {
     {
         for(Foid foid : foidList)
         {
-            batch.draw(originTexture, foid.getOriginX() + foid.getX(), foid.getOriginY() + foid.getY());
+            batch.draw(originTexture, foid.getOriginX() + foid.getX() - originMarkerSize/2, foid.getOriginY() + foid.getY() - originMarkerSize/2);
         }
     }
 
@@ -109,5 +135,10 @@ public class CommandManager {
         }
 
         originTexture = new Texture(new Pixmap(originPxMap2D));
+    }
+
+    private void createShapes()
+    {
+
     }
 }

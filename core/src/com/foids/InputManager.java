@@ -26,6 +26,14 @@ public class InputManager implements InputProcessor {
             case Input.Keys.O :
                 commandManager.toggleOrigin();
                 break;
+            case Input.Keys.A :
+                commandManager.showAll();
+                break;
+            case Input.Keys.R :
+                commandManager.removeAll();
+                break;
+
+
         }
 
         return false;
