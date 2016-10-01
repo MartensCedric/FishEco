@@ -35,13 +35,13 @@ public class Foid {
 
 	private float dir;
 
-    public Foid(int x, int y, byte[] texture)
+    public Foid(int x, int y, int width, int height, byte[] texture)
     {
         Random randomizer = new Random();
         color = Color.rgba8888(0, 57/255f, 235/255f, 1f);
 
-        this.width = 5;
-        this.height = 9;
+        this.width = width;
+        this.height = height;
 
         this.originX = width/2;
         this.originY = height/2;
@@ -78,9 +78,9 @@ public class Foid {
         for(int i = 0; i < fishTexture.length; i++)
         {
             if(fishTexture[i] == 1)
-                pxMap2D.setPixel(i%5, (i/5), Color.rgba8888(0, 0, 0, 1f));
+                pxMap2D.setPixel(i%width, (i/width), Color.rgba8888(0, 0, 0, 1f));
             else if (fishTexture[i] == 2)
-                pxMap2D.setPixel(i%5, (i/5), color);
+                pxMap2D.setPixel(i%width, (i/width), color);
         }
 
         Pixmap pxMap = new Pixmap(pxMap2D);

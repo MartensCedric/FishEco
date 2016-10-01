@@ -23,6 +23,9 @@ public class InputManager implements InputProcessor {
             case Input.Keys.H :
                 commandManager.toggleHitbox();
                 break;
+            case Input.Keys.O :
+                commandManager.toggleOrigin();
+                break;
         }
 
         return false;

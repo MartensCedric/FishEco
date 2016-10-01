@@ -26,17 +26,27 @@ public class FoidsGame extends ApplicationAdapter {
 	private CommandManager commandManager;
 	private InputManager inputManager;
 
+	private int foidWidth;
+	private int foidHeight;
+
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		GdxNativesLoader.load();
 
-		commandManager = new CommandManager(this);
-		inputManager = new InputManager(commandManager);
+
+
+		foidWidth = 5;
+		foidHeight = 9;
 
 		setTextures();
 		spawnFish();
+
+		commandManager = new CommandManager(this);
+
+		inputManager = new InputManager(commandManager);
+		Gdx.input.setInputProcessor(inputManager);
 	}
 
 	@Override
@@ -50,6 +60,8 @@ public class FoidsGame extends ApplicationAdapter {
 		batch.begin();
 		for(Foid foid:foidList)
 			batch.draw(foid.getTextureRegion(), foid.getX(), foid.getY(),foid.getOriginX(),foid.getOriginY(),foid.getTexture().getWidth(), foid.getTexture().getHeight(), 1,1, 0);
+
+		commandManager.draw();
 		batch.end();
 	}
 	
@@ -86,7 +98,7 @@ public class FoidsGame extends ApplicationAdapter {
 		for (int i = 0; i < START_FOID_COUNT; i++)
 		{
 			Random randomizer = new Random();
-			foidList.add(new Foid(randomizer.nextInt(1280), randomizer.nextInt(720), fishTexture));
+			foidList.add(new Foid(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, fishTexture));
 		}
 	}
 
@@ -97,4 +109,12 @@ public class FoidsGame extends ApplicationAdapter {
     public SpriteBatch getBatch() {
         return batch;
     }
+
+	public int getFoidWidth() {
+		return foidWidth;
+	}
+
+	public int getFoidHeight() {
+		return foidHeight;
+	}
 }
