@@ -3,6 +3,9 @@ Flocking simulator heavily inspired from BOIDS (BIRD + OID) by Craig Reynolds in
 
 #HOTKEYS
 H:Show Foid Hitbox
+
 O:Show Foid Origin
+
 A:Show ALL
+
 R:Remove ALL
