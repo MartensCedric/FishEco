@@ -3,18 +3,20 @@ package com.foids;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.foids.commands.CommandManager;
+import com.foids.commands.InputManager;
+import com.foids.life.Fish;
 
 import java.util.LinkedList;
 import java.util.Random;
 
-public class FoidsGame extends ApplicationAdapter {
+public class FishEco extends ApplicationAdapter {
 
 	private SpriteBatch batch;
-	private LinkedList<Foid> foidList;
+	private LinkedList<Fish> fishList;
 	private final int START_FOID_COUNT = 50;
 
 	private byte[] fishTexture;
@@ -29,12 +31,13 @@ public class FoidsGame extends ApplicationAdapter {
 	private int foidWidth;
 	private int foidHeight;
 
+	private FlowField field;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		GdxNativesLoader.load();
-
+		field = new FlowField();
 
 		foidWidth = 5;
 		foidHeight = 9;
@@ -46,6 +49,8 @@ public class FoidsGame extends ApplicationAdapter {
 
 		inputManager = new InputManager(commandManager);
 		Gdx.input.setInputProcessor(inputManager);
+
+
 	}
 
 	@Override
@@ -57,8 +62,8 @@ public class FoidsGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
-		for(Foid foid:foidList)
-			batch.draw(foid.getTextureRegion(), foid.getX(), foid.getY(),foid.getOriginX(),foid.getOriginY(),foid.getTexture().getWidth(), foid.getTexture().getHeight(), 1,1, 0);
+		for(Fish fish : fishList)
+			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginX(), fish.getOriginY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
 
 		commandManager.draw();
 		batch.end();
@@ -71,8 +76,8 @@ public class FoidsGame extends ApplicationAdapter {
 
 	private void update()
 	{
-		for(Foid foid : foidList)
-			foid.update();
+		for(Fish fish : fishList)
+			fish.update();
 	}
 
 	private void setTextures()
@@ -92,17 +97,17 @@ public class FoidsGame extends ApplicationAdapter {
 
 	private void spawnFish()
 	{
-		foidList = new LinkedList<Foid>();
+		fishList = new LinkedList<Fish>();
 
 		for (int i = 0; i < START_FOID_COUNT; i++)
 		{
 			Random randomizer = new Random();
-			foidList.add(new Foid(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, fishTexture));
+			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, fishTexture));
 		}
 	}
 
-    public LinkedList<Foid> getFoidList() {
-        return foidList;
+    public LinkedList<Fish> getFishList() {
+        return fishList;
     }
 
     public SpriteBatch getBatch() {
@@ -115,5 +120,9 @@ public class FoidsGame extends ApplicationAdapter {
 
 	public int getFoidHeight() {
 		return foidHeight;
+	}
+
+	public FlowField getField() {
+		return field;
 	}
 }

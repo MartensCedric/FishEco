@@ -1,4 +1,4 @@
-package com.foids;
+package com.foids.commands;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -26,12 +26,16 @@ public class InputManager implements InputProcessor {
             case Input.Keys.O :
                 commandManager.toggleOrigin();
                 break;
+            case Input.Keys.F :
+                commandManager.toggleFlowField();
+                break;
             case Input.Keys.A :
                 commandManager.showAll();
                 break;
             case Input.Keys.R :
                 commandManager.removeAll();
                 break;
+
 
 
         }

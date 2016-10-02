@@ -1,12 +1,16 @@
-package com.foids;
+package com.foids.commands;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.foids.FlowField;
+import com.foids.life.Fish;
+import com.foids.FishEco;
 
 import java.util.LinkedList;
 
@@ -16,9 +20,9 @@ import java.util.LinkedList;
 public class CommandManager {
 
 
-    private FoidsGame game;
+    private FishEco game;
 
-    private LinkedList<Foid> foidList;
+    private LinkedList<Fish> fishList;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
 
@@ -34,14 +38,18 @@ public class CommandManager {
     private boolean direction;
     private int lineSize;
 
-    public CommandManager(FoidsGame game)
+    private boolean flowField;
+    private FlowField field;
+
+    public CommandManager(FishEco game)
     {
         this.game = game;
 
-        this.foidList = game.getFoidList();
+        this.fishList = game.getFishList();
         this.batch = game.getBatch();
         this.shapeRenderer = new ShapeRenderer();
-
+        shapeRenderer.setAutoShapeType(true);
+        this.field = game.getField();
 
         this.hitbox = false;
         this.origin = false;
@@ -57,9 +65,9 @@ public class CommandManager {
     Command list
     Show Vectors (Direction only) (D)
     Show Vector Length (L)
-    Show Pointing Position for Flow (Q)
+    Show Flow Field Marker (M)
     Show Flow Field (F)
-    Show Foid Origin (O)
+    Show Fish Origin (O)
     Speed (Arrows)
 	Show Parents (P)
 	Show Children (C)
@@ -70,6 +78,10 @@ public class CommandManager {
 
     public void draw()
     {
+
+        if(flowField)
+            drawFlowField();
+
         if(hitbox)
             drawHitboxes();
 
@@ -87,33 +99,57 @@ public class CommandManager {
         origin = !origin;
     }
 
+    public void toggleFlowField()
+    {
+        flowField = !flowField;
+    }
+
     public void showAll()
     {
         hitbox = true;
         origin = true;
+        flowField = true;
     }
 
     public void removeAll()
     {
         hitbox = false;
         origin = false;
+        flowField = false;
     }
 
 
     private void drawHitboxes()
     {
-        for(Foid foid : foidList)
+        for(Fish fish : fishList)
         {
-            batch.draw(hitboxTexture, foid.getX(), foid.getY());
+            batch.draw(hitboxTexture, fish.getX(), fish.getY());
         }
     }
 
     private void drawOrigin()
     {
-        for(Foid foid : foidList)
+        for(Fish fish : fishList)
         {
-            batch.draw(originTexture, foid.getOriginX() + foid.getX() - originMarkerSize/2, foid.getOriginY() + foid.getY() - originMarkerSize/2);
+            batch.draw(originTexture, fish.getOriginX() + fish.getX() - originMarkerSize/2, fish.getOriginY() + fish.getY() - originMarkerSize/2);
         }
+    }
+
+    private void drawFlowField()
+    {
+        batch.end();
+        shapeRenderer.begin();
+        for(int i = 0; i < field.getWidth(); i++)
+        {
+            shapeRenderer.line(i*field.getTileWidth(), Gdx.graphics.getHeight(), i*field.getTileWidth(), 0, Color.BLACK, Color.BLACK);
+        }
+
+        for(int i = 0; i < field.getHeight(); i++)
+        {
+            shapeRenderer.line(0, i*field.getTileHeight(), Gdx.graphics.getWidth(), i*field.getTileHeight(), Color.BLACK, Color.BLACK);
+        }
+        shapeRenderer.end();
+        batch.begin();
     }
 
     private void createTextures()

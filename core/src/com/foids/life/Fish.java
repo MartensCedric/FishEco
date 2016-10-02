@@ -1,4 +1,4 @@
-package com.foids;
+package com.foids.life;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  * Created by Cedric on 2016-09-21.
  */
-public class Foid {
+public class Fish {
 
 
     //TODO USE SHAPERENDERER
@@ -39,7 +39,7 @@ public class Foid {
 	private float dir;
     private float mass;
 
-    public Foid(int x, int y, int width, int height, byte[] texture)
+    public Fish(int x, int y, int width, int height, byte[] texture)
     {
         Random randomizer = new Random();
         color = Color.rgba8888(0, 57/255f, 235/255f, 1f);
@@ -58,8 +58,8 @@ public class Foid {
 
         location = new Vector2(x,y);
         velocity = new Vector2(0,0);
-        force = new Vector2(0, 0.05f);
-        wind = new Vector2(1f, -0.55f);
+        force = new Vector2(-1.5f, 0.05f);
+        wind = new Vector2(0.3f, -0.55f);
 
 
         this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
@@ -98,11 +98,12 @@ public class Foid {
     {
         velocity.scl(0);
         force.add(0, 0.005f);
+        force.scl(1/mass);
         force.limit(maxSpeed);
-        velocity = velocity.add(force);
-        velocity = velocity.add(wind);
+        velocity.add(force);
+        velocity.add(wind);
         velocity.limit(maxSpeed);
-        location = location.add(velocity);
+        location.add(velocity);
 
         if(location.y > Gdx.graphics.getHeight() + height)
             location.y = location.y - Gdx.graphics.getHeight() - height*2;
