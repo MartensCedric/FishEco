@@ -21,13 +21,3 @@ A : Show ALL
 
 R : Remove ALL
 
-#PATCHNOTES
-
-**FishEco** [v0.2](https://www.dropbox.com/s/ois3wy84ypzt7ni/FOIDS%20v0.2.jar?dl=1) 2016/10/03
-
-**FishEco** [v0.1](https://www.dropbox.com/s/a4mqpvm4bkla7cs/FOIDS%20v0.1.jar?dl=1) 2016/10/01
-
-There's not much in this version, exactly 50 Foids spawn and a strong current goes flows to the South-East.
-Foids spawn with a certain speed, some will move against this current and some don't.
-You can press hotkeys H and O to show Hitboxes and Origin of Foids respectively. You can also press
-A or R to show all or remove all of these two settings.
