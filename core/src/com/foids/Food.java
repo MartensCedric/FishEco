@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
@@ -37,6 +36,8 @@ public class Food {
         this.game = game;
 
         Random randomizer = new Random();
+
+        //TODO dont spawn food near borders
 
         this.x = randomizer.nextInt(Gdx.graphics.getWidth());
         this.y = randomizer.nextInt(Gdx.graphics.getHeight());
@@ -71,6 +72,14 @@ public class Food {
     public boolean contains(Rectangle rectangle)
     {
         return hurtbox.contains(rectangle);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public void draw()

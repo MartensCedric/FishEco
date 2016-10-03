@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Rectangle;
 import com.foids.FishEco;
+import com.foids.Food;
 
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -21,6 +23,10 @@ public class Fish {
     private Vector2 force;
     private Vector2 velocity;
     private Vector2 location;
+
+    private float sight;
+
+    private Point foodTarget;
 
     private int width;
     private int height;
@@ -50,8 +56,12 @@ public class Fish {
         this.width = width;
         this.height = height;
 
+        this.sight = 30;
+
         this.originRelativeToFishX = width/2;
         this.originRelativeToFishY = height/2;
+
+        this.foodTarget = null;
 
         this.fishTexture = texture;
         createFishTexture();
@@ -62,16 +72,32 @@ public class Fish {
         location = new Vector2(x,y);
         velocity = new Vector2(0,0);
         force = new Vector2(0,0);
-        desired = new Vector2(1f, 0);
+        desired = new Vector2(0.25f, 0);
 
-
-        this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
+        this.maxSpeed = 0.25f +  (randomizer.nextFloat()/2);
     }
 
     public void update()
     {
         applyForce();
-        dir = getDirectionDegrees(desired);
+        desired.x = 0.25f;
+        desired.y = 0;
+
+        if(foodTarget == null)
+        {
+            for(Food food : game.getFoodList())
+            {
+                if(Math.sqrt(Math.pow(originX() - food.getX(), 2) + Math.pow(originY() - food.getY(), 2)) <= sight)
+                {
+                    foodTarget = new Point(food.getX(), food.getY());
+                    break;
+                }
+            }
+
+        }else if(Math.sqrt(Math.pow(originX() - foodTarget.x, 2) + Math.pow(originY() - foodTarget.y, 2)) > sight)
+        {
+            foodTarget = null;
+        }
     }
 
     public Texture getTexture() {
@@ -106,9 +132,23 @@ public class Fish {
         velocity.scl(0);
         force.scl(0);
         force.add(vectorFromField());
-        force.add(desired);
         force.scl(1/mass);
         velocity.add(force);
+        if(foodTarget == null)
+        {
+            velocity.add(desired);
+            dir = getDirectionDegrees(velocity);
+        }
+        else
+        {
+            desired.x = foodTarget.x - originX();
+            desired.y = foodTarget.y - originY();
+            desired.nor();
+            desired.scl(maxSpeed);
+            dir = getDirectionDegrees(desired);
+            velocity.add(desired);
+        }
+
         location.add(velocity);
 
         if(originY() > Gdx.graphics.getHeight() - 1)
@@ -209,6 +249,11 @@ public class Fish {
         return MathUtils.atan2(vec.y,vec.x) - (float)Math.PI/2;
     }
 
+    /**
+     * Will get the degree that the fish is facing in degrees
+     * @param vec Vector we want to check tan(y/x)to degrees
+     * @return inclination degree
+     */
     private float getDirectionDegrees(Vector2 vec)
     {
         return (float)Math.toDegrees(getDirection(vec));

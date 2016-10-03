@@ -14,6 +14,7 @@ import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
 import com.foids.life.Fish;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -161,7 +162,6 @@ public class FishEco extends ApplicationAdapter {
 	private void spawnFood()
 	{
 		foodList = new LinkedList<Food>();
-		Random randomizer = new Random();
 		for(int i = 0; i < START_FOOD_COUNT; i++)
 		{
 			  foodList.add(new Food(this));
@@ -171,6 +171,8 @@ public class FishEco extends ApplicationAdapter {
     public LinkedList<Fish> getFishList() {
         return fishList;
     }
+
+    public LinkedList<Food> getFoodList() {return  foodList; }
 
     public SpriteBatch getBatch() {
         return batch;
