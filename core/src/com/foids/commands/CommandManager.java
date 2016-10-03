@@ -79,7 +79,6 @@ public class CommandManager {
 
     public void draw()
     {
-
         if(flowField)
             drawFlowField();
 

@@ -2,7 +2,11 @@ package com.foids;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
@@ -22,6 +26,8 @@ public class FishEco extends ApplicationAdapter {
 	private LinkedList<Fish> fishList;
 	private final int START_FOID_COUNT = 50;
 
+
+	private Texture background;
 	private byte[] fishTexture;
 
 	private final int TRANS = 0;
@@ -39,6 +45,7 @@ public class FishEco extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+		setTextures();
 		batch = new SpriteBatch();
 		GdxNativesLoader.load();
 		field = new FlowField();
@@ -46,16 +53,17 @@ public class FishEco extends ApplicationAdapter {
 		foidWidth = 5;
 		foidHeight = 9;
 
-		setTextures();
+
 		updateCounter = 0;
 
+
+		spawnFish();
 
 		commandManager = new CommandManager(this);
 
 		inputManager = new InputManager(commandManager);
 		Gdx.input.setInputProcessor(inputManager);
 
-		spawnFish();
 	}
 
 	@Override
@@ -67,6 +75,11 @@ public class FishEco extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
+		//Drawing background
+		batch.draw(background, 0, 0);
+
+
+
 		for(Fish fish : fishList)
 			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
 
@@ -107,6 +120,26 @@ public class FishEco extends ApplicationAdapter {
 				TRANS,TRANS,COLOR,TRANS,TRANS,
 				TRANS,BLACK,BLACK,BLACK,TRANS
 		};
+
+		Gdx2DPixmap pxBg = new Gdx2DPixmap(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
+
+		OpenSimplexNoise noise = new OpenSimplexNoise();
+
+		float offsetI = 0;
+		float offsetJ = 0;
+		for(int i = 0; i < pxBg.getWidth(); i++)
+		{
+			offsetI+= 0.2;
+			for(int j = 0; j < pxBg.getHeight(); j++)
+			{
+				offsetJ+=0.2;
+
+				int blue = (int)(noise.eval(offsetI,offsetJ)*110 + 87)/2;
+				pxBg.setPixel(i,j, Color.rgba8888(30f/255f,80f/255f,((float)blue+155f)/255f,1f));
+			}
+		}
+
+		background = new Texture(new Pixmap(pxBg));
 	}
 
 	private void spawnFish()

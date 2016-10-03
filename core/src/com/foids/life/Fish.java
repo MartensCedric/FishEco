@@ -44,7 +44,7 @@ public class Fish {
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
         Random randomizer = new Random();
-        color = Color.rgba8888(0, 57/255f, 235/255f, 1f);
+        color = Color.rgba8888(1f, 0, 0, 1f);
 
         this.game = game;
 
@@ -87,7 +87,7 @@ public class Fish {
      */
     private void createFishTexture()
     {
-        Gdx2DPixmap pxMap2D = new Gdx2DPixmap(width, height, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888 );
+        Gdx2DPixmap pxMap2D = new Gdx2DPixmap(width, height, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
 
         for(int i = 0; i < fishTexture.length; i++)
         {
@@ -111,17 +111,17 @@ public class Fish {
         velocity.add(force);
         location.add(velocity);
 
-        if(location.y > Gdx.graphics.getHeight() + height)
-            location.y = location.y - Gdx.graphics.getHeight() - height*2;
+        if(originY() > Gdx.graphics.getHeight() - 1)
+            setOriginY(1);
 
-        if(location.y < -height)
-            location.y = location.y + Gdx.graphics.getHeight() + height*2;
+        if(originY() < 1)
+            setOriginY(Gdx.graphics.getHeight() - 1);
 
-        if(location.x > Gdx.graphics.getWidth() + height) //+Height on purpose
-            location.x = location.x - Gdx.graphics.getWidth() - height*2;
+        if(originX() > Gdx.graphics.getWidth() - 1)
+            setOriginX(1);
 
-        if(location.x < -height)
-            location.x = location.x + Gdx.graphics.getWidth() + height*2;
+        if(originX() < 1)
+            setOriginX(Gdx.graphics.getWidth() - 1);
 
     }
 
@@ -184,5 +184,15 @@ public class Fish {
     public float originY()
     {
         return getY() + originRelativeToFishY;
+    }
+
+    public void setOriginX(float x)
+    {
+        location.x -= originX() - x;
+    }
+
+    public void setOriginY(float y)
+    {
+        location.y -= originY() - y;
     }
 }

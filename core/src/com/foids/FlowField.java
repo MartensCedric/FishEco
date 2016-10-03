@@ -3,6 +3,8 @@ package com.foids;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Random;
+
 /**
  * Created by Cedric on 2016-10-01.
  */
@@ -32,8 +34,7 @@ public class FlowField {
         this.width = Gdx.graphics.getWidth()/tileWidth;
         this.height = Gdx.graphics.getHeight()/tileHeight;
 
-        noise = new OpenSimplexNoise(432424324);
-        //U 432424324
+        noise = new OpenSimplexNoise(new Random().nextInt());
 
         offsetX = 0;
         offsetY = 0;
