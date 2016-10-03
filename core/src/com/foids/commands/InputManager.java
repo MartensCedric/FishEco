@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 /**
- * Created by 1544256 on 2016-09-30.
+ * Created by Cedric Martens on 2016-09-30.
  */
 public class InputManager implements InputProcessor {
 
@@ -34,6 +34,9 @@ public class InputManager implements InputProcessor {
                 break;
             case Input.Keys.R :
                 commandManager.removeAll();
+                break;
+            case Input.Keys.SPACE :
+                commandManager.togglePause();
                 break;
         }
 

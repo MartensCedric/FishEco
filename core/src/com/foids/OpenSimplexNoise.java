@@ -3,8 +3,9 @@ package com.foids;
  * OpenSimplex Noise in Java.
  * by Kurt Spencer
  * Unlicensed
+ *
+ * Minor changes were made by Cedric Martens
  */
-
 public class OpenSimplexNoise {
 
     private static final double STRETCH_CONSTANT_2D = -0.211324865405187;    //(1/Math.sqrt(2+1)-1)/2;
@@ -23,8 +24,12 @@ public class OpenSimplexNoise {
     private short[] perm;
     private short[] permGradIndex3D;
 
+    private long seed;
+
     public OpenSimplexNoise() {
+
         this(DEFAULT_SEED);
+        this.seed = DEFAULT_SEED;
     }
 
     public OpenSimplexNoise(short[] perm) {
@@ -41,6 +46,7 @@ public class OpenSimplexNoise {
     //Generates a proper permutation (i.e. doesn't merely perform N successive pair swaps on a base array)
     //Uses a simple 64-bit LCG.
     public OpenSimplexNoise(long seed) {
+        this.seed = seed;
         perm = new short[256];
         permGradIndex3D = new short[256];
         short[] source = new short[256];
@@ -2125,4 +2131,8 @@ public class OpenSimplexNoise {
             3, -1, -1, -1,      1, -3, -1, -1,      1, -1, -3, -1,      1, -1, -1, -3,
             -3, -1, -1, -1,     -1, -3, -1, -1,     -1, -1, -3, -1,     -1, -1, -1, -3,
     };
+
+    public long getSeed() {
+        return seed;
+    }
 }

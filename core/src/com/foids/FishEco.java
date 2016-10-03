@@ -42,6 +42,7 @@ public class FishEco extends ApplicationAdapter {
 
 	private FlowField field;
 	private byte updateCounter;
+
 	
 	@Override
 	public void create () {
@@ -77,8 +78,6 @@ public class FishEco extends ApplicationAdapter {
 		batch.begin();
 		//Drawing background
 		batch.draw(background, 0, 0);
-
-
 
 		for(Fish fish : fishList)
 			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
@@ -124,7 +123,7 @@ public class FishEco extends ApplicationAdapter {
 		Gdx2DPixmap pxBg = new Gdx2DPixmap(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
 
 		OpenSimplexNoise noise = new OpenSimplexNoise();
-
+		System.out.println("Background seed : " + noise.getSeed());
 		float offsetI = 0;
 		float offsetJ = 0;
 		for(int i = 0; i < pxBg.getWidth(); i++)
@@ -138,7 +137,6 @@ public class FishEco extends ApplicationAdapter {
 				pxBg.setPixel(i,j, Color.rgba8888(30f/255f,80f/255f,((float)blue+155f)/255f,1f));
 			}
 		}
-
 		background = new Texture(new Pixmap(pxBg));
 	}
 

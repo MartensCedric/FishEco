@@ -16,8 +16,6 @@ import java.util.Random;
  */
 public class Fish {
 
-
-    //TODO USE SHAPERENDERER
     private Vector2 desired;
     private Vector2 force;
     private Vector2 velocity;
@@ -44,7 +42,7 @@ public class Fish {
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
         Random randomizer = new Random();
-        color = Color.rgba8888(1f, 0, 0, 1f);
+        color = Color.rgba8888(1f, 1f, 1f, 1f);
 
         this.game = game;
 

@@ -42,6 +42,8 @@ public class CommandManager {
     private FlowField field;
     private Vector2 centerPoint;
 
+    private boolean pause;
+
     public CommandManager(FishEco game)
     {
         this.game = game;
@@ -55,6 +57,7 @@ public class CommandManager {
         this.hitbox = false;
         this.origin = false;
         this.direction = false;
+        this.pause = false;
 
         this.originMarkerSize = 1;
         this.lineSize = 3;
@@ -102,6 +105,11 @@ public class CommandManager {
     public void toggleFlowField()
     {
         flowField = !flowField;
+    }
+
+    public void togglePause()
+    {
+        pause = !pause;
     }
 
     public void showAll()
