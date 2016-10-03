@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
 
@@ -20,8 +21,14 @@ public class Food {
     private FishEco game;
 
     private float quantity;
+    private Rectangle hurtbox;
+
     private int x;
     private int y;
+
+    private int width;
+    private int height;
+
     private Texture texture;
     private int foodColor;
 
@@ -41,8 +48,9 @@ public class Food {
 
     private void generateTexture()
     {
-        int width = 5;
-        int height = 5;
+        width = 5;
+        height = 5;
+
         Gdx2DPixmap px2d = new Gdx2DPixmap(width,height,Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
         for(int i = 0; i < width; i++)
         {
@@ -57,11 +65,12 @@ public class Food {
 
         texture = new Texture(new Pixmap(px2d));
 
+        hurtbox = new Rectangle(x,y, width, height);
     }
 
-    public boolean isContained(Polygon pol)
+    public boolean contains(Rectangle rectangle)
     {
-        return true;
+        return hurtbox.contains(rectangle);
     }
 
     public void draw()

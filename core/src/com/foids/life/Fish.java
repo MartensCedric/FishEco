@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.foids.FishEco;
 
@@ -61,7 +62,7 @@ public class Fish {
         location = new Vector2(x,y);
         velocity = new Vector2(0,0);
         force = new Vector2(0,0);
-        desired = new Vector2(0, 0);
+        desired = new Vector2(1f, 0);
 
 
         this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
@@ -70,6 +71,7 @@ public class Fish {
     public void update()
     {
         applyForce();
+        dir = getDirectionDegrees(desired);
     }
 
     public Texture getTexture() {
@@ -193,4 +195,24 @@ public class Fish {
     {
         location.y -= originY() - y;
     }
+
+    public float getDir() {
+        return dir;
+    }
+
+    /**
+     * Will return the degree that the fish is facing in radian
+     * @return degree that the fish is facing in radian
+     */
+    private float getDirection(Vector2 vec)
+    {
+        return MathUtils.atan2(vec.y,vec.x) - (float)Math.PI/2;
+    }
+
+    private float getDirectionDegrees(Vector2 vec)
+    {
+        return (float)Math.toDegrees(getDirection(vec));
+    }
+
+
 }

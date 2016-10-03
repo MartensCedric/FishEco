@@ -22,10 +22,12 @@ import java.util.Random;
  */
 public class FishEco extends ApplicationAdapter {
 
+	private final int START_FISH_COUNT = 50;
+	private final int START_FOOD_COUNT = 10;
+
 	private SpriteBatch batch;
 	private LinkedList<Fish> fishList;
-	private final int START_FOID_COUNT = 50;
-
+	private LinkedList<Food> foodList;
 
 	private Texture background;
 	private byte[] fishTexture;
@@ -59,12 +61,12 @@ public class FishEco extends ApplicationAdapter {
 
 
 		spawnFish();
+		spawnFood();
 
 		commandManager = new CommandManager(this);
 
 		inputManager = new InputManager(commandManager);
 		Gdx.input.setInputProcessor(inputManager);
-
 	}
 
 	@Override
@@ -79,8 +81,13 @@ public class FishEco extends ApplicationAdapter {
 		//Drawing background
 		batch.draw(background, 0, 0);
 
+		for(Food food : foodList)
+		{
+			food.draw();
+		}
+
 		for(Fish fish : fishList)
-			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
+			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, fish.getDir());
 
 		commandManager.draw();
 		batch.end();
@@ -144,10 +151,20 @@ public class FishEco extends ApplicationAdapter {
 	{
 		fishList = new LinkedList<Fish>();
 
-		for (int i = 0; i < START_FOID_COUNT; i++)
+		Random randomizer = new Random();
+		for (int i = 0; i < START_FISH_COUNT; i++)
 		{
-			Random randomizer = new Random();
 			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, this,fishTexture));
+		}
+	}
+
+	private void spawnFood()
+	{
+		foodList = new LinkedList<Food>();
+		Random randomizer = new Random();
+		for(int i = 0; i < START_FOOD_COUNT; i++)
+		{
+			  foodList.add(new Food(this));
 		}
 	}
 
@@ -170,4 +187,5 @@ public class FishEco extends ApplicationAdapter {
 	public FlowField getField() {
 		return field;
 	}
+
 }

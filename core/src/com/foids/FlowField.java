@@ -34,7 +34,7 @@ public class FlowField {
         this.width = Gdx.graphics.getWidth()/tileWidth;
         this.height = Gdx.graphics.getHeight()/tileHeight;
 
-        noise = new OpenSimplexNoise(new Random().nextInt());
+        noise = new OpenSimplexNoise(-308883859);
         System.out.println("Flow field seed : " + noise.getSeed());
 
         offsetX = 0;
