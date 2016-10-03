@@ -15,7 +15,7 @@ H : Show Foid Hitbox
 
 O : Show Foid Origin
 
-F: Show Flow Field
+F : Show Flow Field
 
 A : Show ALL
 
