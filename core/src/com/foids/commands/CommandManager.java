@@ -2,12 +2,12 @@ package com.foids.commands;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.foids.FlowField;
 import com.foids.life.Fish;
 import com.foids.FishEco;
@@ -15,7 +15,7 @@ import com.foids.FishEco;
 import java.util.LinkedList;
 
 /**
- * Created by 1544256 on 2016-09-30.
+ * Created by Cedric Martens on 2016-09-30.
  */
 public class CommandManager {
 
@@ -40,6 +40,7 @@ public class CommandManager {
 
     private boolean flowField;
     private FlowField field;
+    private Vector2 centerPoint;
 
     public CommandManager(FishEco game)
     {
@@ -83,7 +84,7 @@ public class CommandManager {
             drawFlowField();
 
         if(hitbox)
-            drawHitboxes();
+            drawHurtboxes();
 
         if(origin)
             drawOrigin();
@@ -118,8 +119,10 @@ public class CommandManager {
         flowField = false;
     }
 
-
-    private void drawHitboxes()
+    /**
+     * Draws the hurtoboxes of the fish
+     */
+    private void drawHurtboxes()
     {
         for(Fish fish : fishList)
         {
@@ -131,7 +134,7 @@ public class CommandManager {
     {
         for(Fish fish : fishList)
         {
-            batch.draw(originTexture, fish.getOriginX() + fish.getX() - originMarkerSize/2, fish.getOriginY() + fish.getY() - originMarkerSize/2);
+            batch.draw(originTexture, fish.getOriginRelativeToFishX() + fish.getX() - originMarkerSize/2, fish.getOriginRelativeToFishY() + fish.getY() - originMarkerSize/2);
         }
     }
 
@@ -139,6 +142,7 @@ public class CommandManager {
     {
         batch.end();
         shapeRenderer.begin();
+        //Drawing Grid
         for(int i = 0; i < field.getWidth(); i++)
         {
             shapeRenderer.line(i*field.getTileWidth(), Gdx.graphics.getHeight(), i*field.getTileWidth(), 0, Color.BLACK, Color.BLACK);
@@ -148,6 +152,19 @@ public class CommandManager {
         {
             shapeRenderer.line(0, i*field.getTileHeight(), Gdx.graphics.getWidth(), i*field.getTileHeight(), Color.BLACK, Color.BLACK);
         }
+
+        //Drawing Arrows
+        for(int i = 0; i < field.getWidth(); i++)
+        {
+            for(int j = 0; j < field.getHeight(); j++)
+            {
+                centerPoint = new Vector2(i * field.getTileWidth() + field.getTileWidth()/2, j * field.getTileHeight() + field.getTileHeight() /2);
+                shapeRenderer.line(centerPoint.x, centerPoint.y, centerPoint.x + field.getFieldData()[i][j].x * 10, centerPoint.y + field.getFieldData()[i][j].y * 10, Color.BLACK, Color.BLACK);
+            }
+        }
+
+
+
         shapeRenderer.end();
         batch.begin();
     }

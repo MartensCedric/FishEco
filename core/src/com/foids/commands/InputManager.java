@@ -35,9 +35,6 @@ public class InputManager implements InputProcessor {
             case Input.Keys.R :
                 commandManager.removeAll();
                 break;
-
-
-
         }
 
         return false;

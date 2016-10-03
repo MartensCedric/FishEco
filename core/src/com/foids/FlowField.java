@@ -21,6 +21,9 @@ public class FlowField {
 
     private OpenSimplexNoise noise;
 
+    /**
+     * Will create a grid with Perlin noise's Simplex (new version of PN) random vectors.
+     */
     public FlowField()
     {
         this.tileWidth = 40;
@@ -29,23 +32,12 @@ public class FlowField {
         this.width = Gdx.graphics.getWidth()/tileWidth;
         this.height = Gdx.graphics.getHeight()/tileHeight;
 
-        noise = new OpenSimplexNoise();
+        noise = new OpenSimplexNoise(432424324);
+        //U 432424324
 
         offsetX = 0;
         offsetY = 0;
-
-        fieldData = new Vector2[width][height];
-
-        for(int i = 0; i < width; i++)
-        {
-            offsetX += 0.015;
-            for(int j = 0; j < height; j++)
-            {
-                offsetY += 0.015;
-                fieldData[i][j] = new Vector2((float)noise.eval(offsetX, offsetY),(float)noise.eval(offsetY, offsetX));
-                fieldData[i][j].nor();
-            }
-        }
+        createField();
     }
 
     public Vector2[][] getFieldData()
@@ -67,5 +59,22 @@ public class FlowField {
 
     public int getTileHeight() {
         return tileHeight;
+    }
+
+    public void createField()
+    {
+        fieldData = new Vector2[width][height];
+
+        for(int i = 0; i < width; i++)
+        {
+            offsetX += 0.0025;
+
+            for(int j = 0; j < height; j++)
+            {
+                offsetY += 0.0025;
+                fieldData[i][j] = new Vector2((float)noise.eval(offsetX, offsetY),(float)noise.eval(offsetY, offsetX));
+                fieldData[i][j].nor();
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.foids.FishEco;
 
 import java.util.Random;
 
@@ -21,16 +22,17 @@ public class Fish {
     private Vector2 force;
     private Vector2 velocity;
     private Vector2 location;
-    private Vector2 wind;
 
     private int width;
     private int height;
 
-    private int originX;
-    private int originY;
+    private int originRelativeToFishX;
+    private int originRelativeToFishY;
 
     private float maxSpeed;
     private int color;
+
+    private FishEco game;
 
     private byte[] fishTexture;
     private Texture texture;
@@ -39,16 +41,18 @@ public class Fish {
 	private float dir;
     private float mass;
 
-    public Fish(int x, int y, int width, int height, byte[] texture)
+    public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
         Random randomizer = new Random();
         color = Color.rgba8888(0, 57/255f, 235/255f, 1f);
 
+        this.game = game;
+
         this.width = width;
         this.height = height;
 
-        this.originX = width/2;
-        this.originY = height/2;
+        this.originRelativeToFishX = width/2;
+        this.originRelativeToFishY = height/2;
 
         this.fishTexture = texture;
         createFishTexture();
@@ -58,8 +62,8 @@ public class Fish {
 
         location = new Vector2(x,y);
         velocity = new Vector2(0,0);
-        force = new Vector2(-1.5f, 0.05f);
-        wind = new Vector2(0.3f, -0.55f);
+        force = new Vector2(0,0);
+        desired = new Vector2(0, 0);
 
 
         this.maxSpeed = 0.35f +  (randomizer.nextFloat()/4);
@@ -78,6 +82,9 @@ public class Fish {
         this.texture = texture;
     }
 
+    /**
+     * Creates the texture for the fish with the supplied array of bytes.
+     */
     private void createFishTexture()
     {
         Gdx2DPixmap pxMap2D = new Gdx2DPixmap(width, height, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888 );
@@ -97,19 +104,24 @@ public class Fish {
     private void applyForce()
     {
         velocity.scl(0);
-        force.add(0, 0.005f);
+        force.scl(0);
+        force.add(vectorFromField());
+        force.add(desired);
         force.scl(1/mass);
-        force.limit(maxSpeed);
         velocity.add(force);
-        velocity.add(wind);
-        velocity.limit(maxSpeed);
         location.add(velocity);
 
         if(location.y > Gdx.graphics.getHeight() + height)
             location.y = location.y - Gdx.graphics.getHeight() - height*2;
 
+        if(location.y < -height)
+            location.y = location.y + Gdx.graphics.getHeight() + height*2;
+
         if(location.x > Gdx.graphics.getWidth() + height) //+Height on purpose
             location.x = location.x - Gdx.graphics.getWidth() - height*2;
+
+        if(location.x < -height)
+            location.x = location.x + Gdx.graphics.getWidth() + height*2;
 
     }
 
@@ -124,9 +136,9 @@ public class Fish {
         return location.y;
     }
 
-    public int getOriginX(){return originX;}
+    public int getOriginRelativeToFishX(){return originRelativeToFishX;}
 
-    public int getOriginY(){return originY;}
+    public int getOriginRelativeToFishY(){return originRelativeToFishY;}
 
     public TextureRegion getTextureRegion()
     {
@@ -141,5 +153,36 @@ public class Fish {
     public Vector2 getVelocity()
     {
         return velocity;
+    }
+
+    /**
+     * Gets the vector in the flow field that the Fish's origin is on
+     * @return A vector in a flow field
+     */
+    private Vector2 vectorFromField()
+    {
+        if(originX() >= Gdx.graphics.getWidth())
+            return new Vector2(1f,0f);
+
+        if(originX() <= 0)
+            return  new Vector2(-1f, 0f);
+
+        if(originY() >= Gdx.graphics.getHeight())
+            return new Vector2(0f, 1f);
+
+        if(originY() <= 0)
+            return new Vector2(0f, -1f);
+
+        return game.getField().getFieldData()[(int)originX() / game.getField().getTileWidth()][(int)originY() /game.getField().getTileHeight()];
+    }
+
+    public float originX()
+    {
+        return getX() + originRelativeToFishX;
+    }
+
+    public float originY()
+    {
+        return getY() + originRelativeToFishY;
     }
 }

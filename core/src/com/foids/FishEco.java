@@ -13,6 +13,9 @@ import com.foids.life.Fish;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * Created by Cedric on 2016-09-21.
+ */
 public class FishEco extends ApplicationAdapter {
 
 	private SpriteBatch batch;
@@ -32,6 +35,7 @@ public class FishEco extends ApplicationAdapter {
 	private int foidHeight;
 
 	private FlowField field;
+	private byte updateCounter;
 	
 	@Override
 	public void create () {
@@ -43,14 +47,15 @@ public class FishEco extends ApplicationAdapter {
 		foidHeight = 9;
 
 		setTextures();
-		spawnFish();
+		updateCounter = 0;
+
 
 		commandManager = new CommandManager(this);
 
 		inputManager = new InputManager(commandManager);
 		Gdx.input.setInputProcessor(inputManager);
 
-
+		spawnFish();
 	}
 
 	@Override
@@ -63,7 +68,7 @@ public class FishEco extends ApplicationAdapter {
 
 		batch.begin();
 		for(Fish fish : fishList)
-			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginX(), fish.getOriginY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
+			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, 0);
 
 		commandManager.draw();
 		batch.end();
@@ -78,6 +83,15 @@ public class FishEco extends ApplicationAdapter {
 	{
 		for(Fish fish : fishList)
 			fish.update();
+
+		if(updateCounter >= 30)
+		{
+			//field.createField();
+			updateCounter = 0;
+		}
+
+
+		updateCounter++;
 	}
 
 	private void setTextures()
@@ -102,7 +116,7 @@ public class FishEco extends ApplicationAdapter {
 		for (int i = 0; i < START_FOID_COUNT; i++)
 		{
 			Random randomizer = new Random();
-			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, fishTexture));
+			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, this,fishTexture));
 		}
 	}
 
