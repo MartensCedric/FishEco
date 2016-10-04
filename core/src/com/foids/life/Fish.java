@@ -89,6 +89,7 @@ public class Fish{
         desired = new Vector2(0.25f, 0);
 
         dead = false;
+        System.out.println("Welcome to the world fish " + getId());
 
     }
 
@@ -157,6 +158,13 @@ public class Fish{
         color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
         createFishTexture();
         textureRegion = new TextureRegion(texture);
+
+        Random randomizer = new Random();
+
+        if(randomizer.nextInt(15000) < 3)
+        {
+            game.getEggList().add(new Egg(this, this.game));
+        }
 
     }
 

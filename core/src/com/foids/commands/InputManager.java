@@ -1,7 +1,11 @@
 package com.foids.commands;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.foids.FishEco;
 
 /**
  * Calls commands when some inputs are typed
@@ -9,11 +13,15 @@ import com.badlogic.gdx.InputProcessor;
  */
 public class InputManager implements InputProcessor {
 
+    public final int MOVE_SPEED = 15;
     private CommandManager commandManager;
+    private FishEco game;
 
-    public InputManager(CommandManager cm)
+    public InputManager(CommandManager cm, FishEco game)
     {
         this.commandManager = cm;
+        this.game = game;
+
     }
 
     @Override
@@ -44,6 +52,18 @@ public class InputManager implements InputProcessor {
                 break;
             case Input.Keys.SPACE :
                 commandManager.togglePause();
+                break;
+            case Input.Keys.LEFT :
+                moveCamera(-MOVE_SPEED, 0);
+                break;
+            case Input.Keys.RIGHT :
+                moveCamera(MOVE_SPEED, 0);
+                break;
+            case Input.Keys.UP :
+                moveCamera(0, MOVE_SPEED);
+                break;
+            case Input.Keys.DOWN :
+                moveCamera(0, -MOVE_SPEED);
                 break;
         }
 
@@ -82,6 +102,36 @@ public class InputManager implements InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
-        return false;
+        OrthographicCamera camera = game.getCam();
+        System.out.println(amount);
+
+        if(amount == 0)
+            return false;
+
+        if(amount > 0 && camera.zoom < 1)
+        {
+            camera.zoom *= 1.1f;
+
+            if(camera.zoom > 1)
+                camera.zoom = 1;
+        }
+
+
+        if(amount < 0 && camera.zoom > 0.5)
+            camera.zoom /= 1.1f;
+
+        return true;
+    }
+
+    public void moveCamera(int amountX, int amountY)
+    {
+        Camera cam = game.getCam();
+        cam.position.x += amountX;
+        cam.position.y += amountY;
+
+        if(cam.position.x < 0)
+            cam.position.x = 0;
+        else if(cam.position.x > Gdx.graphics.getWidth())
+            cam.position.x = Gdx.graphics.getWidth();
     }
 }

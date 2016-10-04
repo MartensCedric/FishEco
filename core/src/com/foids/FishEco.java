@@ -2,16 +2,16 @@ package com.foids;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
+import com.foids.life.Egg;
 import com.foids.life.Fish;
 
 import java.util.LinkedList;
@@ -23,12 +23,15 @@ import java.util.Random;
  */
 public class FishEco extends ApplicationAdapter {
 
-	private final int START_FISH_COUNT = 50;
-	private final int START_FOOD_COUNT = 50;
+	private final int START_FISH_COUNT = 35;
+	private final int START_FOOD_COUNT = 25;
 
 	private SpriteBatch batch;
+	private OrthographicCamera cam;
+
 	private LinkedList<Fish> fishList;
 	private LinkedList<Food> foodList;
+	private LinkedList<Egg> eggList;
 
 	private Texture background;
 	private byte[] fishTexture;
@@ -48,7 +51,7 @@ public class FishEco extends ApplicationAdapter {
 
 	//TODO LIST
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
-	//EGGS
+	//FIX Spawn outside map
 	//Groups
 
 	//PLANNED FEATURES
@@ -56,9 +59,15 @@ public class FishEco extends ApplicationAdapter {
 	//Special Mutations include : Egg-Eating, Shark-Friendly
 	//Other mutations affect speed, sight and digestion rate.
 
-	
+
 	@Override
 	public void create () {
+
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+		cam.zoom = 1.0f;
+		cam.update();
+
 		setTextures();
 		batch = new SpriteBatch();
 
@@ -80,9 +89,11 @@ public class FishEco extends ApplicationAdapter {
 		spawnFish();
 		spawnFood();
 
+		eggList = new LinkedList<>();
+
 		commandManager = new CommandManager(this);
 
-		inputManager = new InputManager(commandManager);
+		inputManager = new InputManager(commandManager, this);
 		Gdx.input.setInputProcessor(inputManager);
 	}
 
@@ -94,12 +105,17 @@ public class FishEco extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		batch.setProjectionMatrix(cam.combined);
+
 		batch.begin();
 		//Drawing background
 		batch.draw(background, 0, 0);
 
 		for(Food food : foodList)
 			food.draw();
+
+		for(Egg egg : eggList)
+			egg.draw();
 
 		for(Fish fish : fishList)
 			fish.draw();
@@ -115,6 +131,16 @@ public class FishEco extends ApplicationAdapter {
 
 	private void update()
 	{
+
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+			inputManager.moveCamera(-inputManager.MOVE_SPEED, 0);
+		else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+			inputManager.moveCamera(inputManager.MOVE_SPEED, 0);
+		else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+			inputManager.moveCamera(0, inputManager.MOVE_SPEED);
+		else if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+			inputManager.moveCamera(0, -inputManager.MOVE_SPEED);
+
 		for(int i = 0; i < fishList.size(); i++)
 		{
 			fishList.get(i).update();
@@ -126,15 +152,21 @@ public class FishEco extends ApplicationAdapter {
 			}
 		}
 
-
-		if(updateCounter >= 30)
+		for(int i = 0; i < eggList.size(); i++)
 		{
-			//field.createField();
-			updateCounter = 0;
+			Egg egg = eggList.get(i);
+			egg.update();
+
+			if(egg.isHatched())
+			{
+				fishList.add(new Fish(egg.getX(), egg.getY(), foidWidth, foidHeight, this, fishTexture));
+				eggList.remove(i);
+				i--;
+			}
+
 		}
 
-
-		updateCounter++;
+		cam.update();
 	}
 
 
@@ -232,4 +264,11 @@ public class FishEco extends ApplicationAdapter {
 		return field;
 	}
 
+	public LinkedList<Egg> getEggList() {
+		return eggList;
+	}
+
+	public OrthographicCamera getCam() {
+		return cam;
+	}
 }
