@@ -24,7 +24,7 @@ import java.util.Random;
 public class FishEco extends ApplicationAdapter {
 
 	private final int START_FISH_COUNT = 50;
-	private final int START_FOOD_COUNT = 25;
+	private final int START_FOOD_COUNT = 50;
 
 	private SpriteBatch batch;
 	private LinkedList<Fish> fishList;
@@ -46,11 +46,10 @@ public class FishEco extends ApplicationAdapter {
 	private FlowField field;
 	private byte updateCounter;
 
-	//TODO LIST BEFORE v0.3
+	//TODO LIST
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
 	//EGGS
 	//Groups
-	//S see sight
 
 	//PLANNED FEATURES
 	//Special Mutations : Specially Mutated fish will have a slightly different appeareance

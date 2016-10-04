@@ -16,7 +16,7 @@ import java.util.Random;
  * A fish that swims with the flow field, detects food, goes in groups and avoids sharks.
  * Created by Cedric on 2016-09-21.
  */
-public class Fish {
+public class Fish{
 
     private Vector2 desired;
     private Vector2 force;
@@ -111,7 +111,7 @@ public class Fish {
                 }
             }
         //if the current food target is too far
-        }else if(Math.sqrt(Math.pow(getOriginX() - foodTarget.getX(), 2) + Math.pow(getOriginY() - foodTarget.getY(), 2)) > sight)
+        }else if(Math.sqrt(Math.pow(getOriginX() - foodTarget.getOriginX(), 2) + Math.pow(getOriginY() - foodTarget.getOriginY(), 2)) > sight)
         {
             foodTarget = null;
         //if the current food target is close enough to it
@@ -192,7 +192,7 @@ public class Fish {
         velocity.scl(0);
         force.scl(0);
         force.add(vectorFromField());
-        force.scl(1/mass);
+        force.scl(0.75f);
         velocity.add(force);
         if(foodTarget == null)
         {
@@ -201,8 +201,8 @@ public class Fish {
         }
         else
         {
-            desired.x = foodTarget.getX() - getOriginX();
-            desired.y = foodTarget.getY() - getOriginY();
+            desired.x = foodTarget.getOriginX() - getOriginX();
+            desired.y = foodTarget.getOriginY() - getOriginY();
             desired.nor();
             desired.scl(maxSpeed);
             dir = getDirectionDegrees(desired);

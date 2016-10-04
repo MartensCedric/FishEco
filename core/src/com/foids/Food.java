@@ -100,4 +100,14 @@ public class Food {
     public int getHeight() {
         return height;
     }
+
+    public int getOriginX()
+    {
+        return  x + width/2;
+    }
+
+    public int getOriginY()
+    {
+        return y + height/2;
+    }
 }

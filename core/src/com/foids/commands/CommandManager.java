@@ -151,7 +151,7 @@ public class CommandManager {
         origin = false;
         flowField = false;
         meal = false;
-        sight = true;
+        sight = false;
     }
 
     /**
@@ -162,7 +162,7 @@ public class CommandManager {
         for(Fish fish : fishList)
         {
             batch.draw(hitboxRegion, fish.getX(), fish.getY(),
-                    fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(),
+                    fish.getOriginX(), fish.getOriginY(),
                     fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1, 1, fish.getDir());
         }
     }
@@ -211,8 +211,8 @@ public class CommandManager {
         {
             if(fish.getFoodTarget() != null)
             {
-                shapeRenderer.line(fish.getOriginX(), fish.getOriginY(), fish.getFoodTarget().getX() +
-                        fish.getFoodTarget().getWidth()/2, fish.getFoodTarget().getY() + fish.getFoodTarget().getHeight()/2,
+                shapeRenderer.line(fish.getOriginX(), fish.getOriginY(),
+                        fish.getFoodTarget().getOriginX(), fish.getFoodTarget().getOriginY(),
                         Color.BLACK, Color.BLACK);
             }
         }
