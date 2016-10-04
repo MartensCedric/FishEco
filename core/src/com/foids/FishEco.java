@@ -14,7 +14,6 @@ import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
 import com.foids.life.Fish;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -48,7 +47,15 @@ public class FishEco extends ApplicationAdapter {
 	private byte updateCounter;
 
 	//TODO LIST BEFORE v0.3
-	//FIX ORIGIN -> Add direction vector to x and y
+	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
+	//EGGS
+	//Groups
+	//S see sight
+
+	//PLANNED FEATURES
+	//Special Mutations : Specially Mutated fish will have a slightly different appeareance
+	//Special Mutations include : Egg-Eating, Shark-Friendly
+	//Other mutations affect speed, sight and digestion rate.
 
 	
 	@Override
@@ -115,10 +122,8 @@ public class FishEco extends ApplicationAdapter {
 
 			if(fishList.get(i).isDead())
 			{
-				System.out.println("Fish " + fishList.get(i).getId() + " has died.");
 				fishList.remove(i);
 				i--;
-
 			}
 		}
 
@@ -177,7 +182,7 @@ public class FishEco extends ApplicationAdapter {
 	 */
 	private void spawnFish()
 	{
-		fishList = new LinkedList<Fish>();
+		fishList = new LinkedList<>();
 
 		Random randomizer = new Random();
 		for (int i = 0; i < START_FISH_COUNT; i++)
@@ -191,7 +196,7 @@ public class FishEco extends ApplicationAdapter {
 	 */
 	private void spawnFood()
 	{
-		foodList = new LinkedList<Food>();
+		foodList = new LinkedList<>();
 		for(int i = 0; i < START_FOOD_COUNT; i++)
 		{
 			  foodList.add(new Food(this));

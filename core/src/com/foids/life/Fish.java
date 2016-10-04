@@ -40,6 +40,7 @@ public class Fish {
 
     private byte[] fishTexture;
     private Texture texture;
+
     private TextureRegion textureRegion;
 
 	private float dir;
@@ -97,20 +98,23 @@ public class Fish {
         desired.x = 0.25f;
         desired.y = 0;
 
+        //If theres no food target
         if(foodTarget == null)
         {
             for(Food food : game.getFoodList())
             {
+                //And theres a food close, assign it as a new target
                 if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= sight)
                 {
                     foodTarget = food;
                     break;
                 }
             }
-
+        //if the current food target is too far
         }else if(Math.sqrt(Math.pow(getOriginX() - foodTarget.getX(), 2) + Math.pow(getOriginY() - foodTarget.getY(), 2)) > sight)
         {
             foodTarget = null;
+        //if the current food target is close enough to it
         }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
         {
 
@@ -123,6 +127,7 @@ public class Fish {
             game.getFoodList().add(new Food(game));
             foodTarget = null;
         }else{
+            //Make sure the food still exist (If another fish hasnt ate it yet)
             boolean stopChasing = true;
             for(Food food : game.getFoodList())
             {
@@ -146,6 +151,7 @@ public class Fish {
         if(belly <= 0.10f)
         {
             dead = true;
+            System.out.println("Fish " + getId() + " has died of hunger.");
         }
 
         color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
@@ -328,5 +334,9 @@ public class Fish {
 
     public boolean isDead() {
         return dead;
+    }
+
+    public float getSight() {
+        return sight;
     }
 }

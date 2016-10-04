@@ -33,6 +33,9 @@ public class InputManager implements InputProcessor {
             case Input.Keys.M :
                 commandManager.toggleMeal();
                 break;
+            case Input.Keys.S :
+                commandManager.toggleSight();
+                break;
             case Input.Keys.A :
                 commandManager.showAll();
                 break;

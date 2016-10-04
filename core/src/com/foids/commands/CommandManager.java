@@ -48,6 +48,7 @@ public class CommandManager {
     private boolean pause;
 
     private boolean meal;
+    private boolean sight;
 
     public CommandManager(FishEco game)
     {
@@ -64,6 +65,7 @@ public class CommandManager {
         this.direction = false;
         this.pause = false;
         this.meal = false;
+        this.sight = false;
 
         this.originMarkerSize = 1;
         this.lineSize = 3;
@@ -99,6 +101,9 @@ public class CommandManager {
 
         if(meal)
             drawMealLines();
+
+        if(sight)
+            drawSight();
     }
 
     public void toggleHitbox()
@@ -126,12 +131,18 @@ public class CommandManager {
         meal = !meal;
     }
 
+    public void toggleSight()
+    {
+        sight = !sight;
+    }
+
     public void showAll()
     {
         hitbox = true;
         origin = true;
         flowField = true;
         meal = true;
+        sight = true;
     }
 
     public void removeAll()
@@ -140,6 +151,7 @@ public class CommandManager {
         origin = false;
         flowField = false;
         meal = false;
+        sight = true;
     }
 
     /**
@@ -187,9 +199,6 @@ public class CommandManager {
                 shapeRenderer.line(centerPoint.x, centerPoint.y, centerPoint.x + field.getFieldData()[i][j].x * 10, centerPoint.y + field.getFieldData()[i][j].y * 10, Color.BLACK, Color.BLACK);
             }
         }
-
-
-
         shapeRenderer.end();
         batch.begin();
     }
@@ -207,6 +216,20 @@ public class CommandManager {
                         Color.BLACK, Color.BLACK);
             }
         }
+        shapeRenderer.end();
+        batch.begin();
+    }
+
+    private void drawSight()
+    {
+        batch.end();
+        shapeRenderer.begin();
+
+        for(Fish fish : game.getFishList())
+        {
+            shapeRenderer.circle(fish.getOriginX(), fish.getOriginY(), fish.getSight());
+        }
+
         shapeRenderer.end();
         batch.begin();
     }
