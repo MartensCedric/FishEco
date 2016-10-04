@@ -48,11 +48,21 @@ public class Fish {
     private static int idCounter = 0;
     private int id;
 
+    private float belly;
+    private float energyLossSpeed;
+
+    private boolean dead;
+
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
         this.id = idCounter++;
         Random randomizer = new Random();
-        color = Color.rgba8888(1f, 1f, 1f, 1f);
+        this.maxSpeed = 0.25f +  (randomizer.nextFloat()*0.75f);
+
+        this.belly = 1f;
+        this.energyLossSpeed = 1/3000f;
+
+        color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
 
         this.game = game;
 
@@ -77,7 +87,8 @@ public class Fish {
         force = new Vector2(0,0);
         desired = new Vector2(0.25f, 0);
 
-        this.maxSpeed = 0.25f +  (randomizer.nextFloat());
+        dead = false;
+
     }
 
     public void update()
@@ -102,6 +113,12 @@ public class Fish {
             foodTarget = null;
         }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
         {
+
+            belly += 0.25f;
+
+            if(belly > 1f)
+                belly = 1f;
+
             game.getFoodList().remove(foodTarget);
             game.getFoodList().add(new Food(game));
             foodTarget = null;
@@ -124,6 +141,16 @@ public class Fish {
 
         }
 
+        belly -= energyLossSpeed;
+
+        if(belly <= 0.10f)
+        {
+            dead = true;
+        }
+
+        color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
+        createFishTexture();
+        textureRegion = new TextureRegion(texture);
 
     }
 
@@ -297,5 +324,9 @@ public class Fish {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 }

@@ -159,7 +159,7 @@ public class CommandManager {
     {
         for(Fish fish : fishList)
         {
-            batch.draw(originTexture, fish.getOriginRelativeToFishX() + fish.getX() - originMarkerSize/2, fish.getOriginRelativeToFishY() + fish.getY() - originMarkerSize/2);
+            batch.draw(originTexture, fish.getOriginX(), fish.getOriginY());
         }
     }
 

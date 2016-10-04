@@ -25,7 +25,7 @@ import java.util.Random;
 public class FishEco extends ApplicationAdapter {
 
 	private final int START_FISH_COUNT = 50;
-	private final int START_FOOD_COUNT = 10;
+	private final int START_FOOD_COUNT = 25;
 
 	private SpriteBatch batch;
 	private LinkedList<Fish> fishList;
@@ -48,7 +48,7 @@ public class FishEco extends ApplicationAdapter {
 	private byte updateCounter;
 
 	//TODO LIST BEFORE v0.3
-	//FIX ORIGIN
+	//FIX ORIGIN -> Add direction vector to x and y
 
 	
 	@Override
@@ -109,8 +109,19 @@ public class FishEco extends ApplicationAdapter {
 
 	private void update()
 	{
-		for(Fish fish : fishList)
-			fish.update();
+		for(int i = 0; i < fishList.size(); i++)
+		{
+			fishList.get(i).update();
+
+			if(fishList.get(i).isDead())
+			{
+				System.out.println("Fish " + fishList.get(i).getId() + " has died.");
+				fishList.remove(i);
+				i--;
+
+			}
+		}
+
 
 		if(updateCounter >= 30)
 		{
