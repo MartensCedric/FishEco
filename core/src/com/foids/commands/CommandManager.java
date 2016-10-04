@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.foids.FlowField;
@@ -15,6 +16,7 @@ import com.foids.FishEco;
 import java.util.LinkedList;
 
 /**
+ * Manages the commands and makes sure to display stuff when toggled
  * Created by Cedric Martens on 2016-09-30.
  */
 public class CommandManager {
@@ -28,6 +30,7 @@ public class CommandManager {
 
     private Gdx2DPixmap hitboxPxMap2D;
     private Texture hitboxTexture;
+    private TextureRegion hitboxRegion;
     private boolean hitbox;
 
     private Gdx2DPixmap originPxMap2D;
@@ -44,6 +47,8 @@ public class CommandManager {
 
     private boolean pause;
 
+    private boolean meal;
+
     public CommandManager(FishEco game)
     {
         this.game = game;
@@ -58,6 +63,7 @@ public class CommandManager {
         this.origin = false;
         this.direction = false;
         this.pause = false;
+        this.meal = false;
 
         this.originMarkerSize = 1;
         this.lineSize = 3;
@@ -69,7 +75,7 @@ public class CommandManager {
     Command list
     Show Vectors (Direction only) (D)
     Show Vector Length (L)
-    Show Flow Field Marker (M)
+    Show Meal (M)
     Show Flow Field (F)
     Show Fish Origin (O)
     Speed (Arrows)
@@ -90,6 +96,9 @@ public class CommandManager {
 
         if(origin)
             drawOrigin();
+
+        if(meal)
+            drawMealLines();
     }
 
     public void toggleHitbox()
@@ -112,11 +121,17 @@ public class CommandManager {
         pause = !pause;
     }
 
+    public void toggleMeal()
+    {
+        meal = !meal;
+    }
+
     public void showAll()
     {
         hitbox = true;
         origin = true;
         flowField = true;
+        meal = true;
     }
 
     public void removeAll()
@@ -124,6 +139,7 @@ public class CommandManager {
         hitbox = false;
         origin = false;
         flowField = false;
+        meal = false;
     }
 
     /**
@@ -133,7 +149,9 @@ public class CommandManager {
     {
         for(Fish fish : fishList)
         {
-            batch.draw(hitboxTexture, fish.getX(), fish.getY());
+            batch.draw(hitboxRegion, fish.getX(), fish.getY(),
+                    fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(),
+                    fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1, 1, fish.getDir());
         }
     }
 
@@ -176,6 +194,23 @@ public class CommandManager {
         batch.begin();
     }
 
+    private void drawMealLines()
+    {
+        batch.end();
+        shapeRenderer.begin();
+        for(Fish fish : game.getFishList())
+        {
+            if(fish.getFoodTarget() != null)
+            {
+                shapeRenderer.line(fish.getOriginX(), fish.getOriginY(), fish.getFoodTarget().getX() +
+                        fish.getFoodTarget().getWidth()/2, fish.getFoodTarget().getY() + fish.getFoodTarget().getHeight()/2,
+                        Color.BLACK, Color.BLACK);
+            }
+        }
+        shapeRenderer.end();
+        batch.begin();
+    }
+
     private void createTextures()
     {
         hitboxPxMap2D = new Gdx2DPixmap(game.getFoidWidth(), game.getFoidHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888 );
@@ -186,6 +221,7 @@ public class CommandManager {
         }
 
         hitboxTexture = new Texture(new Pixmap(hitboxPxMap2D));
+        hitboxRegion = new TextureRegion(hitboxTexture);
 
 
         originPxMap2D = new Gdx2DPixmap(originMarkerSize, originMarkerSize, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
@@ -195,10 +231,5 @@ public class CommandManager {
         }
 
         originTexture = new Texture(new Pixmap(originPxMap2D));
-    }
-
-    private void createShapes()
-    {
-
     }
 }

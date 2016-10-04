@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 /**
+ * Calls commands when some inputs are typed
  * Created by Cedric Martens on 2016-09-30.
  */
 public class InputManager implements InputProcessor {
@@ -28,6 +29,9 @@ public class InputManager implements InputProcessor {
                 break;
             case Input.Keys.F :
                 commandManager.toggleFlowField();
+                break;
+            case Input.Keys.M :
+                commandManager.toggleMeal();
                 break;
             case Input.Keys.A :
                 commandManager.showAll();

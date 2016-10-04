@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
 
@@ -74,6 +75,11 @@ public class Food {
         return hurtbox.contains(rectangle);
     }
 
+    public boolean contains(Vector2 vec)
+    {
+        return hurtbox.contains(vec);
+    }
+
     public int getX() {
         return x;
     }
@@ -85,5 +91,13 @@ public class Food {
     public void draw()
     {
         game.getBatch().draw(texture, x, y);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

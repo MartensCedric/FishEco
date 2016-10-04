@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
 /**
+ * Will create a grid with Perlin noise's Simplex (new version of PN) random vectors.
  * Created by Cedric on 2016-10-01.
  */
 public class FlowField {

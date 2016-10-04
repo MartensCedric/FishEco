@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /**
+ * Main game class
  * Created by Cedric on 2016-09-21.
  */
 public class FishEco extends ApplicationAdapter {
@@ -46,18 +47,27 @@ public class FishEco extends ApplicationAdapter {
 	private FlowField field;
 	private byte updateCounter;
 
+	//TODO LIST BEFORE v0.3
+	//FIX ORIGIN
+
 	
 	@Override
 	public void create () {
 		setTextures();
 		batch = new SpriteBatch();
+
+		//We need to load this to make our own textures with the Gdx2DPixmap
 		GdxNativesLoader.load();
+
+		//We create the water currents
 		field = new FlowField();
 
+
+		//Set the dimensions of the fish
 		foidWidth = 5;
 		foidHeight = 9;
 
-
+		//This is used to change the flow field, currently obsolete
 		updateCounter = 0;
 
 
@@ -83,12 +93,10 @@ public class FishEco extends ApplicationAdapter {
 		batch.draw(background, 0, 0);
 
 		for(Food food : foodList)
-		{
 			food.draw();
-		}
 
 		for(Fish fish : fishList)
-			batch.draw(fish.getTextureRegion(), fish.getX(), fish.getY(), fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(), fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1,1, fish.getDir());
+			fish.draw();
 
 		commandManager.draw();
 		batch.end();
@@ -114,8 +122,12 @@ public class FishEco extends ApplicationAdapter {
 		updateCounter++;
 	}
 
+
+
+
 	private void setTextures()
 	{
+		//Texture for the fishes
 		fishTexture = new byte[]{
 				TRANS,BLACK,BLACK,BLACK,TRANS,
 				BLACK,COLOR,COLOR,COLOR,BLACK,
@@ -128,6 +140,7 @@ public class FishEco extends ApplicationAdapter {
 				TRANS,BLACK,BLACK,BLACK,TRANS
 		};
 
+		//Here we create a background with Simplex Noise (Perlin Noise upgrade from 2001)
 		Gdx2DPixmap pxBg = new Gdx2DPixmap(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
 
 		OpenSimplexNoise noise = new OpenSimplexNoise();
@@ -148,6 +161,9 @@ public class FishEco extends ApplicationAdapter {
 		background = new Texture(new Pixmap(pxBg));
 	}
 
+	/**
+	 * Spawn the initial fish
+	 */
 	private void spawnFish()
 	{
 		fishList = new LinkedList<Fish>();
@@ -159,6 +175,9 @@ public class FishEco extends ApplicationAdapter {
 		}
 	}
 
+	/**
+	 * Spawn the initial food
+	 */
 	private void spawnFood()
 	{
 		foodList = new LinkedList<Food>();
@@ -168,11 +187,19 @@ public class FishEco extends ApplicationAdapter {
 		}
 	}
 
+	/**
+	 * Gets the list of all the fish
+	 * @return all the alive fish
+	 */
     public LinkedList<Fish> getFishList() {
         return fishList;
     }
 
-    public LinkedList<Food> getFoodList() {return  foodList; }
+	/**
+	 * Gets the list of all the food
+	 * @return all the non eaten food.
+	 */
+	public LinkedList<Food> getFoodList() {return  foodList; }
 
     public SpriteBatch getBatch() {
         return batch;

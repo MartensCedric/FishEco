@@ -7,14 +7,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.Rectangle;
 import com.foids.FishEco;
 import com.foids.Food;
 
-import java.awt.*;
 import java.util.Random;
 
 /**
+ * A fish that swims with the flow field, detects food, goes in groups and avoids sharks.
  * Created by Cedric on 2016-09-21.
  */
 public class Fish {
@@ -26,7 +25,7 @@ public class Fish {
 
     private float sight;
 
-    private Point foodTarget;
+    private Food foodTarget;
 
     private int width;
     private int height;
@@ -46,8 +45,12 @@ public class Fish {
 	private float dir;
     private float mass;
 
+    private static int idCounter = 0;
+    private int id;
+
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
+        this.id = idCounter++;
         Random randomizer = new Random();
         color = Color.rgba8888(1f, 1f, 1f, 1f);
 
@@ -74,7 +77,7 @@ public class Fish {
         force = new Vector2(0,0);
         desired = new Vector2(0.25f, 0);
 
-        this.maxSpeed = 0.25f +  (randomizer.nextFloat()/2);
+        this.maxSpeed = 0.25f +  (randomizer.nextFloat());
     }
 
     public void update()
@@ -87,17 +90,41 @@ public class Fish {
         {
             for(Food food : game.getFoodList())
             {
-                if(Math.sqrt(Math.pow(originX() - food.getX(), 2) + Math.pow(originY() - food.getY(), 2)) <= sight)
+                if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= sight)
                 {
-                    foodTarget = new Point(food.getX(), food.getY());
+                    foodTarget = food;
                     break;
                 }
             }
 
-        }else if(Math.sqrt(Math.pow(originX() - foodTarget.x, 2) + Math.pow(originY() - foodTarget.y, 2)) > sight)
+        }else if(Math.sqrt(Math.pow(getOriginX() - foodTarget.getX(), 2) + Math.pow(getOriginY() - foodTarget.getY(), 2)) > sight)
         {
             foodTarget = null;
+        }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
+        {
+            game.getFoodList().remove(foodTarget);
+            game.getFoodList().add(new Food(game));
+            foodTarget = null;
+        }else{
+            boolean stopChasing = true;
+            for(Food food : game.getFoodList())
+            {
+                if(food == foodTarget)
+                {
+                    stopChasing = false;
+                    break;
+                }
+            }
+
+            if(stopChasing)
+            {
+                game.getFoodList().remove(foodTarget);
+                foodTarget = null;
+            }
+
         }
+
+
     }
 
     public Texture getTexture() {
@@ -141,8 +168,8 @@ public class Fish {
         }
         else
         {
-            desired.x = foodTarget.x - originX();
-            desired.y = foodTarget.y - originY();
+            desired.x = foodTarget.getX() - getOriginX();
+            desired.y = foodTarget.getY() - getOriginY();
             desired.nor();
             desired.scl(maxSpeed);
             dir = getDirectionDegrees(desired);
@@ -151,16 +178,16 @@ public class Fish {
 
         location.add(velocity);
 
-        if(originY() > Gdx.graphics.getHeight() - 1)
+        if(getOriginY() > Gdx.graphics.getHeight() - 1)
             setOriginY(1);
 
-        if(originY() < 1)
+        if(getOriginY() < 1)
             setOriginY(Gdx.graphics.getHeight() - 1);
 
-        if(originX() > Gdx.graphics.getWidth() - 1)
+        if(getOriginX() > Gdx.graphics.getWidth() - 1)
             setOriginX(1);
 
-        if(originX() < 1)
+        if(getOriginX() < 1)
             setOriginX(Gdx.graphics.getWidth() - 1);
 
     }
@@ -201,43 +228,48 @@ public class Fish {
      */
     private Vector2 vectorFromField()
     {
-        if(originX() >= Gdx.graphics.getWidth())
+        if(getOriginX() >= Gdx.graphics.getWidth())
             return new Vector2(1f,0f);
 
-        if(originX() <= 0)
+        if(getOriginX() <= 0)
             return  new Vector2(-1f, 0f);
 
-        if(originY() >= Gdx.graphics.getHeight())
+        if(getOriginY() >= Gdx.graphics.getHeight())
             return new Vector2(0f, 1f);
 
-        if(originY() <= 0)
+        if(getOriginY() <= 0)
             return new Vector2(0f, -1f);
 
-        return game.getField().getFieldData()[(int)originX() / game.getField().getTileWidth()][(int)originY() /game.getField().getTileHeight()];
+        return game.getField().getFieldData()[(int) getOriginX() / game.getField().getTileWidth()][(int) getOriginY() /game.getField().getTileHeight()];
     }
 
-    public float originX()
+    public float getOriginX()
     {
         return getX() + originRelativeToFishX;
     }
 
-    public float originY()
+    public float getOriginY()
     {
         return getY() + originRelativeToFishY;
     }
 
     public void setOriginX(float x)
     {
-        location.x -= originX() - x;
+        location.x -= getOriginX() - x;
     }
 
     public void setOriginY(float y)
     {
-        location.y -= originY() - y;
+        location.y -= getOriginY() - y;
     }
 
     public float getDir() {
         return dir;
+    }
+
+    public void draw()
+    {
+        game.getBatch().draw(getTextureRegion(), getX(), getY(), getOriginRelativeToFishX(), getOriginRelativeToFishY(), getTexture().getWidth(), getTexture().getHeight(), 1,1, getDir());
     }
 
     /**
@@ -259,5 +291,11 @@ public class Fish {
         return (float)Math.toDegrees(getDirection(vec));
     }
 
+    public Food getFoodTarget() {
+        return foodTarget;
+    }
 
+    public int getId() {
+        return id;
+    }
 }
