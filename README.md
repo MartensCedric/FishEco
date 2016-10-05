@@ -18,6 +18,10 @@ H : Show Foid Hitbox
 
 N : Show Names
 
+M : Show targeted meal
+
+S : Show sight
+
 O : Show Foid Origin
 
 --------------------
