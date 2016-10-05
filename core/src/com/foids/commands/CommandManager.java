@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -49,6 +50,9 @@ public class CommandManager {
 
     private boolean meal;
     private boolean sight;
+    private boolean name;
+
+    private BitmapFont font;
 
     public CommandManager(FishEco game)
     {
@@ -66,9 +70,12 @@ public class CommandManager {
         this.pause = false;
         this.meal = false;
         this.sight = false;
+        this.name = false;
 
         this.originMarkerSize = 1;
         this.lineSize = 3;
+
+        font = new BitmapFont();
 
         createTextures();
     }
@@ -80,6 +87,7 @@ public class CommandManager {
     Show Meal (M)
     Show Flow Field (F)
     Show Fish Origin (O)
+    Show Names (N)
     Speed (Arrows)
 	Show Parents (P)
 	Show Children (C)
@@ -104,6 +112,9 @@ public class CommandManager {
 
         if(sight)
             drawSight();
+
+        if(name)
+            drawNames();
     }
 
     public void toggleHitbox()
@@ -134,6 +145,11 @@ public class CommandManager {
     public void toggleSight()
     {
         sight = !sight;
+    }
+
+    public void toggleNames()
+    {
+        name = !name;
     }
 
     public void showAll()
@@ -226,6 +242,7 @@ public class CommandManager {
     {
         batch.end();
         shapeRenderer.begin();
+        shapeRenderer.setProjectionMatrix(game.getCam().combined);
 
         for(Fish fish : game.getFishList())
         {
@@ -236,6 +253,14 @@ public class CommandManager {
         batch.begin();
     }
 
+    private void drawNames()
+    {
+        for(Fish fish : game.getFishList())
+        {
+            font.draw(batch, Integer.toString(fish.getId()), fish.getX() + 10, fish.getY() + 10);
+        }
+
+    }
     private void createTextures()
     {
         hitboxPxMap2D = new Gdx2DPixmap(game.getFoidWidth(), game.getFoidHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888 );

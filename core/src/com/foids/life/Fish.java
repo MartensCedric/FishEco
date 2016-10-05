@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.foids.FishEco;
 import com.foids.Food;
 
@@ -18,6 +19,7 @@ import java.util.Random;
  */
 public class Fish{
 
+    private long FOOD_TARGETING_LIMIT = 2_500;
     private Vector2 desired;
     private Vector2 force;
     private Vector2 velocity;
@@ -54,6 +56,8 @@ public class Fish{
 
     private boolean dead;
 
+    private long foodAttractionTime;
+
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
         this.id = idCounter++;
@@ -81,7 +85,8 @@ public class Fish{
         createFishTexture();
         this.textureRegion = new TextureRegion(this.texture);
 
-        this.mass = 1f;
+        this.mass = 1.25f;
+
 
         location = new Vector2(x,y);
         velocity = new Vector2(0,0);
@@ -108,6 +113,7 @@ public class Fish{
                 if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= sight)
                 {
                     foodTarget = food;
+                    foodAttractionTime = TimeUtils.millis();
                     break;
                 }
             }
@@ -118,7 +124,6 @@ public class Fish{
         //if the current food target is close enough to it
         }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
         {
-
             belly += foodTarget.getQuantity();
 
             if(belly > 1f)
@@ -141,7 +146,6 @@ public class Fish{
 
             if(stopChasing)
             {
-                game.getFoodList().remove(foodTarget);
                 foodTarget = null;
             }
 
@@ -200,7 +204,7 @@ public class Fish{
         velocity.scl(0);
         force.scl(0);
         force.add(vectorFromField());
-        force.scl(0.75f);
+        force.scl(maxSpeed/mass);
         velocity.add(force);
         if(foodTarget == null)
         {
@@ -212,7 +216,7 @@ public class Fish{
             desired.x = foodTarget.getOriginX() - getOriginX();
             desired.y = foodTarget.getOriginY() - getOriginY();
             desired.nor();
-            desired.scl(maxSpeed);
+            desired.scl(maxSpeed /* adrenaline*/);
             dir = getDirectionDegrees(desired);
             velocity.add(desired);
         }

@@ -56,6 +56,7 @@ public class FishEco extends ApplicationAdapter {
 	//Groups
 
 
+
 	//PLANNED FEATURES
 	//Special Mutations : Specially Mutated fish will have a slightly different appeareance
 	//Special Mutations include : Egg-Eating, Shark-Friendly
@@ -86,7 +87,6 @@ public class FishEco extends ApplicationAdapter {
 
 		//This is used to change the flow field, currently obsolete
 		updateCounter = 0;
-
 
 		spawnFish();
 		spawnFood();

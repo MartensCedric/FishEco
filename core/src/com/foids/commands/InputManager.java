@@ -43,27 +43,21 @@ public class InputManager implements InputProcessor {
             case Input.Keys.S :
                 commandManager.toggleSight();
                 break;
+            case Input.Keys.N :
+                commandManager.toggleNames();
+                break;
+
             case Input.Keys.A :
                 commandManager.showAll();
                 break;
             case Input.Keys.R :
                 commandManager.removeAll();
                 break;
+
             case Input.Keys.SPACE :
                 commandManager.togglePause();
                 break;
-            case Input.Keys.LEFT :
-                moveCamera(-MOVE_SPEED, 0);
-                break;
-            case Input.Keys.RIGHT :
-                moveCamera(MOVE_SPEED, 0);
-                break;
-            case Input.Keys.UP :
-                moveCamera(0, MOVE_SPEED);
-                break;
-            case Input.Keys.DOWN :
-                moveCamera(0, -MOVE_SPEED);
-                break;
+
         }
 
         return false;
