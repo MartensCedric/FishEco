@@ -42,7 +42,8 @@ public class Food {
 
         this.x = randomizer.nextInt(Gdx.graphics.getWidth());
         this.y = randomizer.nextInt(Gdx.graphics.getHeight());
-        this.quantity = 0.5f + randomizer.nextFloat();
+
+        this.quantity = 0.25f;
 
         this.foodColor = Color.rgba8888(102f/255f, 51f/255f, 0, 1f);
         generateTexture();
@@ -109,5 +110,9 @@ public class Food {
     public int getOriginY()
     {
         return y + height/2;
+    }
+
+    public float getQuantity() {
+        return quantity;
     }
 }

@@ -52,7 +52,9 @@ public class FishEco extends ApplicationAdapter {
 	//TODO LIST
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
 	//FIX Spawn outside map
+	//OPTIMIZE!!
 	//Groups
+
 
 	//PLANNED FEATURES
 	//Special Mutations : Specially Mutated fish will have a slightly different appeareance
@@ -123,7 +125,7 @@ public class FishEco extends ApplicationAdapter {
 		commandManager.draw();
 		batch.end();
 	}
-	
+
 	@Override
 	public void dispose () {
 		batch.dispose();
@@ -134,11 +136,14 @@ public class FishEco extends ApplicationAdapter {
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
 			inputManager.moveCamera(-inputManager.MOVE_SPEED, 0);
-		else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+
+		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
 			inputManager.moveCamera(inputManager.MOVE_SPEED, 0);
-		else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+
+		if(Gdx.input.isKeyPressed(Input.Keys.UP))
 			inputManager.moveCamera(0, inputManager.MOVE_SPEED);
-		else if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+
+		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
 			inputManager.moveCamera(0, -inputManager.MOVE_SPEED);
 
 		for(int i = 0; i < fishList.size(); i++)

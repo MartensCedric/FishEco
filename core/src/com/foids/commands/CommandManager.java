@@ -155,14 +155,14 @@ public class CommandManager {
     }
 
     /**
-     * Draws the hurtoboxes of the fish
+     * Draws the hurtboxes of the fish
      */
     private void drawHurtboxes()
     {
         for(Fish fish : fishList)
         {
             batch.draw(hitboxRegion, fish.getX(), fish.getY(),
-                    fish.getOriginX(), fish.getOriginY(),
+                    fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(),
                     fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1, 1, fish.getDir());
         }
     }
@@ -179,6 +179,7 @@ public class CommandManager {
     {
         batch.end();
         shapeRenderer.begin();
+        shapeRenderer.setProjectionMatrix(game.getCam().combined);
         //Drawing Grid
         for(int i = 0; i < field.getWidth(); i++)
         {
@@ -207,6 +208,7 @@ public class CommandManager {
     {
         batch.end();
         shapeRenderer.begin();
+        shapeRenderer.setProjectionMatrix(game.getCam().combined);
         for(Fish fish : game.getFishList())
         {
             if(fish.getFoodTarget() != null)

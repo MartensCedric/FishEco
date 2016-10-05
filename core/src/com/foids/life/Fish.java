@@ -119,7 +119,7 @@ public class Fish{
         }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
         {
 
-            belly += 0.25f;
+            belly += foodTarget.getQuantity();
 
             if(belly > 1f)
                 belly = 1f;

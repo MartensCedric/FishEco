@@ -3,7 +3,6 @@ package com.foids.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.foids.FishEco;
 
@@ -103,7 +102,6 @@ public class InputManager implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         OrthographicCamera camera = game.getCam();
-        System.out.println(amount);
 
         if(amount == 0)
             return false;
@@ -117,7 +115,7 @@ public class InputManager implements InputProcessor {
         }
 
 
-        if(amount < 0 && camera.zoom > 0.5)
+        if(amount < 0 && camera.zoom > 0.25)
             camera.zoom /= 1.1f;
 
         return true;
@@ -125,13 +123,9 @@ public class InputManager implements InputProcessor {
 
     public void moveCamera(int amountX, int amountY)
     {
-        Camera cam = game.getCam();
-        cam.position.x += amountX;
-        cam.position.y += amountY;
+        OrthographicCamera cam = game.getCam();
+        cam.position.x += amountX*cam.zoom;
+        cam.position.y += amountY*cam.zoom;
 
-        if(cam.position.x < 0)
-            cam.position.x = 0;
-        else if(cam.position.x > Gdx.graphics.getWidth())
-            cam.position.x = Gdx.graphics.getWidth();
     }
 }
