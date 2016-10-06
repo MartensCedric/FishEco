@@ -51,6 +51,8 @@ public class CommandManager {
     private boolean meal;
     private boolean sight;
     private boolean name;
+    private boolean gui;
+    private boolean stats;
 
     private BitmapFont font;
 
@@ -71,6 +73,8 @@ public class CommandManager {
         this.meal = false;
         this.sight = false;
         this.name = false;
+        this.gui = false;
+        this.stats = false;
 
         this.originMarkerSize = 1;
         this.lineSize = 3;
@@ -115,6 +119,12 @@ public class CommandManager {
 
         if(name)
             drawNames();
+
+        if(gui)
+            drawGUI();
+
+        if(stats)
+            drawStats();
     }
 
     public void toggleHitbox()
@@ -152,6 +162,16 @@ public class CommandManager {
         name = !name;
     }
 
+    public void toggleGUI()
+    {
+        gui = !gui;
+    }
+
+    public void toggleStats()
+    {
+        stats = !stats;
+    }
+
     public void showAll()
     {
         hitbox = true;
@@ -159,6 +179,7 @@ public class CommandManager {
         flowField = true;
         meal = true;
         sight = true;
+        name = true;
     }
 
     public void removeAll()
@@ -168,6 +189,21 @@ public class CommandManager {
         flowField = false;
         meal = false;
         sight = false;
+        name = false;
+    }
+
+    private void drawStats()
+    {
+        for(Fish fish : game.getFishList())
+        {
+            font.draw(batch, Float.toString((float)Math.round(fish.getMaxSpeed() * 100)/100) + " " + Float.toString((float)Math.round(fish.getSightNormalized() * 100)/100), fish.getX() + 10, fish.getY() + 15);
+        }
+    }
+
+    private void drawGUI()
+    {
+        font.draw(batch, "Fish count : " + Integer.toString(game.getFishList().size()), (int)(Gdx.graphics.getWidth() * 0.9), (int)(Gdx.graphics.getHeight() * 0.05));
+        font.draw(batch, "FPS : " + Integer.toString(Gdx.graphics.getFramesPerSecond()), (int)(Gdx.graphics.getWidth() * 0.9), (int)(Gdx.graphics.getHeight() * 0.02));
     }
 
     /**

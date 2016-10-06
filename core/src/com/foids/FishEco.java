@@ -51,7 +51,6 @@ public class FishEco extends ApplicationAdapter {
 
 	//TODO LIST
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
-	//FIX Spawn outside map
 	//OPTIMIZE!!
 	//Groups
 

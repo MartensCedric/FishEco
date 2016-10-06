@@ -40,8 +40,8 @@ public class Food {
 
         //TODO dont spawn food near borders
 
-        this.x = randomizer.nextInt(Gdx.graphics.getWidth());
-        this.y = randomizer.nextInt(Gdx.graphics.getHeight());
+        this.x = 1 + randomizer.nextInt(Gdx.graphics.getWidth() - 2);
+        this.y = 1 + randomizer.nextInt(Gdx.graphics.getHeight() - 2);
 
         this.quantity = 0.25f;
 

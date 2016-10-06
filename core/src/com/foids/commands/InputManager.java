@@ -46,6 +46,12 @@ public class InputManager implements InputProcessor {
             case Input.Keys.N :
                 commandManager.toggleNames();
                 break;
+            case Input.Keys.U :
+                commandManager.toggleGUI();
+                break;
+            case Input.Keys.T :
+                commandManager.toggleStats();
+                break;
 
             case Input.Keys.A :
                 commandManager.showAll();

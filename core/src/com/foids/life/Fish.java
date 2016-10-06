@@ -24,6 +24,7 @@ public class Fish{
     private Vector2 force;
     private Vector2 velocity;
     private Vector2 location;
+    private Vector2 originVector;
 
     private float sight;
 
@@ -67,14 +68,14 @@ public class Fish{
         this.belly = 1f;
         this.energyLossSpeed = 1/3000f;
 
-        color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
+        color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
 
         this.game = game;
 
         this.width = width;
         this.height = height;
 
-        this.sight = 30;
+        this.sight = 10 + randomizer.nextInt(40);
 
         this.originRelativeToFishX = width/2;
         this.originRelativeToFishY = height/2;
@@ -92,6 +93,7 @@ public class Fish{
         velocity = new Vector2(0,0);
         force = new Vector2(0,0);
         desired = new Vector2(0.25f, 0);
+        originVector = new Vector2(location.x + originRelativeToFishX, location.y + originRelativeToFishY);
 
         dead = false;
         System.out.println("Welcome to the world fish " + getId());
@@ -122,7 +124,7 @@ public class Fish{
         {
             foodTarget = null;
         //if the current food target is close enough to it
-        }else if(foodTarget.contains(new Vector2(getOriginX(), getOriginY())))
+        }else if(foodTarget.contains(originVector))
         {
             belly += foodTarget.getQuantity();
 
@@ -159,7 +161,7 @@ public class Fish{
             System.out.println("Fish " + getId() + " has died of hunger.");
         }
 
-        color = Color.rgba8888(maxSpeed, 1f, 1f, belly);
+        color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
         createFishTexture();
         textureRegion = new TextureRegion(texture);
 
@@ -170,6 +172,8 @@ public class Fish{
             game.getEggList().add(new Egg(this, this.game));
         }
 
+        originVector.x = location.x + originRelativeToFishX;
+        originVector.y = location.y + originRelativeToFishY;
     }
 
     public Texture getTexture() {
@@ -350,5 +354,15 @@ public class Fish{
 
     public float getSight() {
         return sight;
+    }
+
+    public float getSightNormalized()
+    {
+        return (getSight() - 10)/40;
+    }
+
+    public float getMaxSpeed()
+    {
+        return maxSpeed;
     }
 }
