@@ -180,6 +180,8 @@ public class CommandManager {
         meal = true;
         sight = true;
         name = true;
+        stats = true;
+        gui = true;
     }
 
     public void removeAll()
@@ -190,18 +192,22 @@ public class CommandManager {
         meal = false;
         sight = false;
         name = false;
+        stats = false;
+        gui = false;
     }
 
     private void drawStats()
     {
+        font.setColor(Color.WHITE);
         for(Fish fish : game.getFishList())
         {
-            font.draw(batch, Float.toString((float)Math.round(fish.getMaxSpeed() * 100)/100) + " " + Float.toString((float)Math.round(fish.getSightNormalized() * 100)/100), fish.getX() + 10, fish.getY() + 15);
+            font.draw(batch, Float.toString((float)Math.round(fish.getMaxSpeed() * 100)/100) + " " + Float.toString((float)Math.round(fish.getSightNormalized() * 100)/100), fish.getX() - 10, fish.getY() + 25);
         }
     }
 
     private void drawGUI()
     {
+        font.setColor(Color.WHITE);
         font.draw(batch, "Fish count : " + Integer.toString(game.getFishList().size()), (int)(Gdx.graphics.getWidth() * 0.9), (int)(Gdx.graphics.getHeight() * 0.05));
         font.draw(batch, "FPS : " + Integer.toString(Gdx.graphics.getFramesPerSecond()), (int)(Gdx.graphics.getWidth() * 0.9), (int)(Gdx.graphics.getHeight() * 0.02));
     }
@@ -291,9 +297,10 @@ public class CommandManager {
 
     private void drawNames()
     {
+        font.setColor(Color.YELLOW);
         for(Fish fish : game.getFishList())
         {
-            font.draw(batch, Integer.toString(fish.getId()), fish.getX() + 10, fish.getY() + 10);
+            font.draw(batch, fish.getId() + "", fish.getX() + 10, fish.getY() + 10);
         }
 
     }

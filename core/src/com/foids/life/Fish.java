@@ -20,6 +20,7 @@ import java.util.Random;
 public class Fish{
 
     private long FOOD_TARGETING_LIMIT = 2_500;
+
     private Vector2 desired;
     private Vector2 force;
     private Vector2 velocity;
@@ -29,6 +30,7 @@ public class Fish{
     private float sight;
 
     private Food foodTarget;
+    private int foodAte;
 
     private int width;
     private int height;
@@ -57,16 +59,67 @@ public class Fish{
 
     private boolean dead;
 
-    private long foodAttractionTime;
+    private int parentID;
+
+    private long textureTimer;
+    private Fish parent;
+
+    private long birthTime;
 
     public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
     {
+        this(x,y,width,height,game,texture,null);
+    }
+
+    public Fish(int x, int y, int width, int height, FishEco game, byte[] texture, Fish father)
+    {
+        this.parent = father;
         this.id = idCounter++;
+
+        if(parent == null)
+            parentID = -1;
+        else
+        {
+            parentID = parent.getId();
+        }
+
+        this.foodAte = 0;
         Random randomizer = new Random();
-        this.maxSpeed = 0.25f +  (randomizer.nextFloat()*0.75f);
+
+        if(parent != null)
+        {
+            if(parent.getParent() != null)
+            {
+                parent.getParent().setParent(null);
+            }
+        }
 
         this.belly = 1f;
         this.energyLossSpeed = 1/3000f;
+        if(parent == null)
+        {
+            this.maxSpeed = 0.25f +  (randomizer.nextFloat()*0.75f);
+            this.sight = 10 + randomizer.nextInt(40);
+        }else{
+            this.maxSpeed = parent.getMaxSpeed() + MathUtils.randomTriangular()/10;
+            this.sight = parent.getSight() + MathUtils.randomTriangular()*5;
+
+
+            if(maxSpeed < 0)
+                maxSpeed = 0;
+            else if(maxSpeed > 1)
+                maxSpeed = 1;
+
+            if(getSightNormalized() < 0)
+                sight = 10;
+            else if (getSightNormalized() > 1)
+                sight = 50;
+
+
+        }
+
+        textureTimer = TimeUtils.millis();
+        birthTime = textureTimer;
 
         color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
 
@@ -75,7 +128,7 @@ public class Fish{
         this.width = width;
         this.height = height;
 
-        this.sight = 10 + randomizer.nextInt(40);
+
 
         this.originRelativeToFishX = width/2;
         this.originRelativeToFishY = height/2;
@@ -97,7 +150,6 @@ public class Fish{
 
         dead = false;
         System.out.println("Welcome to the world fish " + getId());
-
     }
 
     public void update()
@@ -106,7 +158,7 @@ public class Fish{
         desired.x = 0.25f;
         desired.y = 0;
 
-        //If theres no food target
+        //If there's no food target
         if(foodTarget == null)
         {
             for(Food food : game.getFoodList())
@@ -115,7 +167,6 @@ public class Fish{
                 if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= sight)
                 {
                     foodTarget = food;
-                    foodAttractionTime = TimeUtils.millis();
                     break;
                 }
             }
@@ -127,12 +178,17 @@ public class Fish{
         }else if(foodTarget.contains(originVector))
         {
             belly += foodTarget.getQuantity();
+            foodAte++;
 
             if(belly > 1f)
                 belly = 1f;
 
             game.getFoodList().remove(foodTarget);
-            game.getFoodList().add(new Food(game));
+
+            if(game.getFoodList().size() == 19)
+                game.getFoodList().add(new Food(game));
+
+            createFishTexture();
             foodTarget = null;
         }else{
             //Make sure the food still exist (If another fish hasnt ate it yet)
@@ -158,12 +214,20 @@ public class Fish{
         if(belly <= 0.10f)
         {
             dead = true;
+
             System.out.println("Fish " + getId() + " has died of hunger.");
         }
 
-        color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
-        createFishTexture();
-        textureRegion = new TextureRegion(texture);
+
+        if(textureTimer + 2_000 < TimeUtils.millis())
+        {
+            textureTimer = TimeUtils.millis();
+
+            color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
+            createFishTexture();
+            textureRegion = new TextureRegion(texture);//This seems to bug less
+        }
+
 
         Random randomizer = new Random();
 
@@ -208,7 +272,7 @@ public class Fish{
         velocity.scl(0);
         force.scl(0);
         force.add(vectorFromField());
-        force.scl(maxSpeed/mass);
+        force.scl(maxSpeed/mass); //THIS IS NO GOOD NEED CHANGE
         velocity.add(force);
         if(foodTarget == null)
         {
@@ -364,5 +428,26 @@ public class Fish{
     public float getMaxSpeed()
     {
         return maxSpeed;
+    }
+
+    public Fish getParent() {
+        return parent;
+    }
+
+    public int getParentID()
+    {
+        return parentID;
+    }
+
+    public void setParent(Fish parent) {
+        this.parent = parent;
+    }
+
+    public long getBirthTime() {
+        return birthTime;
+    }
+
+    public int getFoodAte() {
+        return foodAte;
     }
 }

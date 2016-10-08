@@ -7,13 +7,16 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
+import com.foids.life.DeathInfo;
 import com.foids.life.Egg;
 import com.foids.life.Fish;
 
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -23,8 +26,8 @@ import java.util.Random;
  */
 public class FishEco extends ApplicationAdapter {
 
-	private final int START_FISH_COUNT = 35;
-	private final int START_FOOD_COUNT = 25;
+	private final int START_FISH_COUNT = 25;
+	private final int START_FOOD_COUNT = 20;
 
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
@@ -32,6 +35,7 @@ public class FishEco extends ApplicationAdapter {
 	private LinkedList<Fish> fishList;
 	private LinkedList<Food> foodList;
 	private LinkedList<Egg> eggList;
+	private Queue<DeathInfo> deathList;
 
 	private Texture background;
 	private byte[] fishTexture;
@@ -53,8 +57,6 @@ public class FishEco extends ApplicationAdapter {
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
 	//OPTIMIZE!!
 	//Groups
-
-
 
 	//PLANNED FEATURES
 	//Special Mutations : Specially Mutated fish will have a slightly different appeareance
@@ -91,11 +93,50 @@ public class FishEco extends ApplicationAdapter {
 		spawnFood();
 
 		eggList = new LinkedList<>();
+        deathList = new Queue<>(100);
 
 		commandManager = new CommandManager(this);
 
 		inputManager = new InputManager(commandManager, this);
 		Gdx.input.setInputProcessor(inputManager);
+
+        PrintWriter clearWriter = null;
+        try {
+            clearWriter = new PrintWriter("N:/Data/fishTree.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        clearWriter.print("");
+        clearWriter.close();
+
+
+        Thread fileWriter = new Thread(() ->
+        {
+
+            BufferedWriter writer = null;
+
+
+            while(true)
+            {
+                try {
+                    Thread.sleep(10000);
+                    writer = new BufferedWriter(new FileWriter("N:/Data/fishTree.txt", true));
+                    while(deathList.size != 0)
+                    {
+                        writer.write(deathList.removeFirst().toString());
+                        writer.newLine();
+                    }
+                    writer.close();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        fileWriter.start();
 	}
 
 	@Override
@@ -147,10 +188,14 @@ public class FishEco extends ApplicationAdapter {
 
 		for(int i = 0; i < fishList.size(); i++)
 		{
-			fishList.get(i).update();
+			Fish fish = fishList.get(i);
+			fish.update();
 
-			if(fishList.get(i).isDead())
+			if(fish.isDead())
 			{
+				deathList.addLast(new DeathInfo(fish.getBirthTime(), TimeUtils.millis(),
+						fish.getId(), fish.getParentID(), fish.getSight(), fish.getMaxSpeed(),
+						fish.getFoodAte()));
 				fishList.remove(i);
 				i--;
 			}
@@ -163,7 +208,7 @@ public class FishEco extends ApplicationAdapter {
 
 			if(egg.isHatched())
 			{
-				fishList.add(new Fish(egg.getX(), egg.getY(), foidWidth, foidHeight, this, fishTexture));
+				fishList.add(new Fish(egg.getX(), egg.getY(), foidWidth, foidHeight, this, fishTexture, egg.getParent()));
 				eggList.remove(i);
 				i--;
 			}
@@ -171,6 +216,7 @@ public class FishEco extends ApplicationAdapter {
 		}
 
 		cam.update();
+
 	}
 
 

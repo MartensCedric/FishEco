@@ -100,4 +100,8 @@ public class Egg {
     public boolean isHatched() {
         return hatched;
     }
+
+    public Fish getParent() {
+        return parent;
+    }
 }
