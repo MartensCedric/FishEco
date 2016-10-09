@@ -9,12 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.Queue;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
-import com.foids.life.DeathInfo;
+import com.foids.commands.DeathInfo;
 import com.foids.life.Egg;
 import com.foids.life.Fish;
+import com.foids.life.Food;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -51,6 +51,7 @@ public class FishEco extends ApplicationAdapter {
 	private int foidHeight;
 
 	private FlowField field;
+	private long numberOfFrames;
 	private byte updateCounter;
 
 	//TODO LIST
@@ -66,7 +67,7 @@ public class FishEco extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-
+		numberOfFrames = 0;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		cam.zoom = 1.0f;
@@ -112,7 +113,6 @@ public class FishEco extends ApplicationAdapter {
 
         Thread fileWriter = new Thread(() ->
         {
-
             BufferedWriter writer = null;
 
 
@@ -174,6 +174,8 @@ public class FishEco extends ApplicationAdapter {
 	private void update()
 	{
 
+		numberOfFrames++;
+
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
 			inputManager.moveCamera(-inputManager.MOVE_SPEED, 0);
 
@@ -193,7 +195,7 @@ public class FishEco extends ApplicationAdapter {
 
 			if(fish.isDead())
 			{
-				deathList.addLast(new DeathInfo(fish.getBirthTime(), TimeUtils.millis(),
+				deathList.addLast(new DeathInfo(fish.getBirthTime(), numberOfFrames,
 						fish.getId(), fish.getParentID(), fish.getSight(), fish.getMaxSpeed(),
 						fish.getFoodAte()));
 				fishList.remove(i);
@@ -218,8 +220,6 @@ public class FishEco extends ApplicationAdapter {
 		cam.update();
 
 	}
-
-
 
 
 	private void setTextures()
@@ -320,5 +320,9 @@ public class FishEco extends ApplicationAdapter {
 
 	public OrthographicCamera getCam() {
 		return cam;
+	}
+
+	public long getNumberOfFrames() {
+		return numberOfFrames;
 	}
 }

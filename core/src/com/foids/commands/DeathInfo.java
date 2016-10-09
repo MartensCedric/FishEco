@@ -1,4 +1,4 @@
-package com.foids.life;
+package com.foids.commands;
 
 /**
  * This is used to save info to a file in order to get stats.

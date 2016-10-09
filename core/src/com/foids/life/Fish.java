@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.foids.FishEco;
-import com.foids.Food;
 
 import java.util.Random;
 
@@ -96,6 +95,7 @@ public class Fish{
 
         this.belly = 1f;
         this.energyLossSpeed = 1/3000f;
+
         if(parent == null)
         {
             this.maxSpeed = 0.25f +  (randomizer.nextFloat()*0.75f);
@@ -119,7 +119,7 @@ public class Fish{
         }
 
         textureTimer = TimeUtils.millis();
-        birthTime = textureTimer;
+        birthTime = game.getNumberOfFrames();
 
         color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
 
@@ -127,8 +127,6 @@ public class Fish{
 
         this.width = width;
         this.height = height;
-
-
 
         this.originRelativeToFishX = width/2;
         this.originRelativeToFishY = height/2;
@@ -149,6 +147,7 @@ public class Fish{
         originVector = new Vector2(location.x + originRelativeToFishX, location.y + originRelativeToFishY);
 
         dead = false;
+
         System.out.println("Welcome to the world fish " + getId());
     }
 
@@ -446,6 +445,7 @@ public class Fish{
     public long getBirthTime() {
         return birthTime;
     }
+
 
     public int getFoodAte() {
         return foodAte;
