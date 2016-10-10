@@ -37,8 +37,8 @@ public class Egg {
 
         this.game = game;
 
-        this.x = (int)this.parent.getX();
-        this.y = (int)this.parent.getY();
+        this.x = (int)this.parent.getLocation().x;
+        this.y = (int)this.parent.getLocation().y;
 
         this.width = 3;
         this.height = 3;

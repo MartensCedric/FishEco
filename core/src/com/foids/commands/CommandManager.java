@@ -201,7 +201,10 @@ public class CommandManager {
         font.setColor(Color.WHITE);
         for(Fish fish : game.getFishList())
         {
-            font.draw(batch, Float.toString((float)Math.round(fish.getMaxSpeed() * 100)/100) + " " + Float.toString((float)Math.round(fish.getSightNormalized() * 100)/100), fish.getX() - 10, fish.getY() + 25);
+            font.draw(batch,
+                Float.toString((float)Math.round(fish.getMaxSpeed() * 100)/100) + " " +
+                    Float.toString((float)Math.round(fish.getSightNormalized() * 100)/100),
+                    fish.getLocation().x - 10, fish.getLocation().y + 25);
         }
     }
 
@@ -219,8 +222,8 @@ public class CommandManager {
     {
         for(Fish fish : fishList)
         {
-            batch.draw(hitboxRegion, fish.getX(), fish.getY(),
-                    fish.getOriginRelativeToFishX(), fish.getOriginRelativeToFishY(),
+            batch.draw(hitboxRegion, fish.getLocation().x, fish.getLocation().y,
+                    fish.getOriginRelativeToX(), fish.getOriginRelativeToY(),
                     fish.getTexture().getWidth(), fish.getTexture().getHeight(), 1, 1, fish.getDir());
         }
     }
@@ -300,7 +303,7 @@ public class CommandManager {
         font.setColor(Color.YELLOW);
         for(Fish fish : game.getFishList())
         {
-            font.draw(batch, fish.getId() + "", fish.getX() + 10, fish.getY() + 10);
+            font.draw(batch, fish.getId() + "", fish.getLocation().x + 10, fish.getLocation().y + 10);
         }
 
     }

@@ -220,7 +220,7 @@ public class FishEco extends ApplicationAdapter {
 
 			if(egg.isHatched())
 			{
-				fishList.add(new Fish(egg.getX(), egg.getY(), foidWidth, foidHeight, this, fishTexture, egg.getParent()));
+				fishList.add(new Fish(egg.getX(), egg.getY(), foidWidth, foidHeight, fishTexture, egg.getParent(), this));
 				eggList.remove(i);
 				i--;
 			}
@@ -279,7 +279,7 @@ public class FishEco extends ApplicationAdapter {
 		Random randomizer = new Random();
 		for (int i = 0; i < START_FISH_COUNT; i++)
 		{
-			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, this,fishTexture));
+			fishList.add(new Fish(randomizer.nextInt(1280), randomizer.nextInt(720), foidWidth, foidHeight, fishTexture, this));
 		}
 	}
 

@@ -16,44 +16,18 @@ import java.util.Random;
  * A fish that swims with the flow field, detects food, goes in groups and avoids sharks.
  * Created by Cedric on 2016-09-21.
  */
-public class Fish{
+public class Fish extends Creature{
 
-    private long FOOD_TARGETING_LIMIT = 2_500;
+    private final float MIN_SIGHT_VALUE = 10f;
+    private final float MAX_SIGHT_VALUE = 50;
 
-    private Vector2 desired;
-    private Vector2 force;
-    private Vector2 velocity;
-    private Vector2 location;
-    private Vector2 originVector;
-
-    private float sight;
-
-    private Food foodTarget;
-    private int foodAte;
-
-    private int width;
-    private int height;
-
-    private int originRelativeToFishX;
-    private int originRelativeToFishY;
-
-    private float maxSpeed;
     private int color;
 
-    private FishEco game;
-
     private byte[] fishTexture;
-    private Texture texture;
-
-    private TextureRegion textureRegion;
-
-	private float dir;
-    private float mass;
 
     private static int idCounter = 0;
     private int id;
 
-    private float belly;
     private float energyLossSpeed;
 
     private boolean dead;
@@ -63,136 +37,131 @@ public class Fish{
     private long textureTimer;
     private Fish parent;
 
+    private Food foodTarget;
+
     private long birthTime;
 
-    public Fish(int x, int y, int width, int height, FishEco game, byte[] texture)
+    private Random randomizer;
+
+    public Fish(int x, int y, int width, int height, byte[] texture, FishEco game)
     {
-        this(x,y,width,height,game,texture,null);
+        this(x,y,width,height,texture,null, game);
     }
 
-    public Fish(int x, int y, int width, int height, FishEco game, byte[] texture, Fish father)
+    public Fish(int x, int y, int width, int height, byte[] fishTexture, Fish father, FishEco game)
     {
-        this.parent = father;
         this.id = idCounter++;
+
+        this.parent = father;
 
         if(parent == null)
             parentID = -1;
         else
-        {
             parentID = parent.getId();
-        }
 
-        this.foodAte = 0;
-        Random randomizer = new Random();
+        setFoodAte(0);
+        this.randomizer = new Random();
 
         if(parent != null)
-        {
             if(parent.getParent() != null)
-            {
                 parent.getParent().setParent(null);
-            }
-        }
 
-        this.belly = 1f;
+
+        setBelly(1f);
         this.energyLossSpeed = 1/3000f;
 
         if(parent == null)
         {
-            this.maxSpeed = 0.25f +  (randomizer.nextFloat()*0.75f);
-            this.sight = 10 + randomizer.nextInt(40);
+            setMaxSpeed(0.25f +  (randomizer.nextFloat()*0.75f));
+            setSight(10 + randomizer.nextInt((int)(MAX_SIGHT_VALUE - MIN_SIGHT_VALUE)));
         }else{
-            this.maxSpeed = parent.getMaxSpeed() + MathUtils.randomTriangular()/10;
-            this.sight = parent.getSight() + MathUtils.randomTriangular()*5;
+            setMaxSpeed(parent.getMaxSpeed() + MathUtils.randomTriangular()/MIN_SIGHT_VALUE);
+            setSight(parent.getSight() + MathUtils.randomTriangular()*5);
 
 
-            if(maxSpeed < 0)
-                maxSpeed = 0;
-            else if(maxSpeed > 1)
-                maxSpeed = 1;
+            if(getMaxSpeed() < 0)
+                setMaxSpeed(0);
+            else if(getMaxSpeed() > 1)
+                setMaxSpeed(1);
 
             if(getSightNormalized() < 0)
-                sight = 10;
+                setSight(MIN_SIGHT_VALUE);
             else if (getSightNormalized() > 1)
-                sight = 50;
-
-
+                setSight(MAX_SIGHT_VALUE);
         }
 
         textureTimer = TimeUtils.millis();
         birthTime = game.getNumberOfFrames();
 
-        color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
+        color = Color.rgba8888(getMaxSpeed(), getSightNormalized(), 1f, getBelly());
 
-        this.game = game;
+        setGame(game);
 
-        this.width = width;
-        this.height = height;
+        setWidth(width);
+        setHeight(height);
 
-        this.originRelativeToFishX = width/2;
-        this.originRelativeToFishY = height/2;
+        setFoodTarget(null);
 
-        this.foodTarget = null;
-
-        this.fishTexture = texture;
+        this.fishTexture = fishTexture;
         createFishTexture();
-        this.textureRegion = new TextureRegion(this.texture);
+        setTextureRegion(new TextureRegion(getTexture()));
 
-        this.mass = 1.25f;
+        setMass(1.25f);
 
-
-        location = new Vector2(x,y);
-        velocity = new Vector2(0,0);
-        force = new Vector2(0,0);
-        desired = new Vector2(0.25f, 0);
-        originVector = new Vector2(location.x + originRelativeToFishX, location.y + originRelativeToFishY);
+        setLocation(new Vector2(x,y));
+        setVelocity(new Vector2(0,0));
+        setForce(new Vector2(0,0));
+        setDesired(new Vector2(0.25f, 0));
+        setOriginVector(new Vector2(getLocation().x + getOriginRelativeToX(), getLocation().y + getOriginRelativeToY()));
 
         dead = false;
 
         System.out.println("Welcome to the world fish " + getId());
     }
 
+    @Override
     public void update()
     {
         applyForce();
-        desired.x = 0.25f;
-        desired.y = 0;
+        getDesired().x = 0.25f;
+        getDesired().y = 0f;
 
         //If there's no food target
-        if(foodTarget == null)
+        if(getFoodTarget() == null)
         {
-            for(Food food : game.getFoodList())
+            for(Food food : getGame().getFoodList())
             {
                 //And theres a food close, assign it as a new target
-                if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= sight)
+                if(Math.sqrt(Math.pow(getOriginX() - food.getX(), 2) + Math.pow(getOriginY() - food.getY(), 2)) <= getSight())
                 {
-                    foodTarget = food;
+                    setFoodTarget(food);
                     break;
                 }
             }
         //if the current food target is too far
-        }else if(Math.sqrt(Math.pow(getOriginX() - foodTarget.getOriginX(), 2) + Math.pow(getOriginY() - foodTarget.getOriginY(), 2)) > sight)
+        }else if(Math.sqrt(Math.pow(getOriginX() - getFoodTarget().getOriginX(), 2) + Math.pow(getOriginY() - foodTarget.getOriginY(), 2)) > getSight())
         {
             foodTarget = null;
         //if the current food target is close enough to it
-        }else if(foodTarget.contains(originVector))
+        }else if(foodTarget.contains(getOriginVector()))
         {
-            belly += foodTarget.getQuantity();
-            foodAte++;
 
-            if(belly > 1f)
-                belly = 1f;
+            ateFood(foodTarget.getQuantity());
 
-            game.getFoodList().remove(foodTarget);
+            if(getBelly() > 1f)
+                setBelly(1f);
 
-            if(game.getFoodList().size() == 19)
-                game.getFoodList().add(new Food(game));
+            getGame().getFoodList().remove(foodTarget);
+
+            if(getGame().getFoodList().size() == 19)
+                getGame().getFoodList().add(new Food(getGame()));
 
             createFishTexture();
             foodTarget = null;
         }else{
-            //Make sure the food still exist (If another fish hasnt ate it yet)
+            //Make sure the food still exist (If another fish hasn't ate it yet)
             boolean stopChasing = true;
-            for(Food food : game.getFoodList())
+            for(Food food : getGame().getFoodList())
             {
                 if(food == foodTarget)
                 {
@@ -208,12 +177,10 @@ public class Fish{
 
         }
 
-        belly -= energyLossSpeed;
+        crave(energyLossSpeed);
 
-        if(belly <= 0.10f)
+        if(getBelly() <= 0.10f)
         {
-            dead = true;
-
             System.out.println("Fish " + getId() + " has died of hunger.");
         }
 
@@ -222,29 +189,19 @@ public class Fish{
         {
             textureTimer = TimeUtils.millis();
 
-            color = Color.rgba8888(maxSpeed, getSightNormalized(), 1f, belly);
+            color = Color.rgba8888(getMaxSpeed(), getSightNormalized(), 1f, getBelly());
             createFishTexture();
-            textureRegion = new TextureRegion(texture);//This seems to bug less
+            setTextureRegion(new TextureRegion(getTexture()));//This seems to bug less even if I make a new TextureRegion every time
         }
 
 
-        Random randomizer = new Random();
-
-        if(randomizer.nextInt(15000) < 3)
+        if(this.randomizer.nextInt(15000) < 3)
         {
-            game.getEggList().add(new Egg(this, this.game));
+            getGame().getEggList().add(new Egg(this, getGame()));
         }
 
-        originVector.x = location.x + originRelativeToFishX;
-        originVector.y = location.y + originRelativeToFishY;
-    }
-
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+        getOriginVector().x = getLocation().x + getOriginRelativeToX();
+        getOriginVector().y = getLocation().y + getOriginRelativeToY();
     }
 
     /**
@@ -252,43 +209,46 @@ public class Fish{
      */
     private void createFishTexture()
     {
-        Gdx2DPixmap pxMap2D = new Gdx2DPixmap(width, height, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
+        Gdx2DPixmap pxMap2D = new Gdx2DPixmap(getWidth(), getHeight(), Gdx2DPixmap.GDX2D_FORMAT_RGBA8888);
 
         for(int i = 0; i < fishTexture.length; i++)
         {
             if(fishTexture[i] == 1)
-                pxMap2D.setPixel(i%width, (i/width), Color.rgba8888(0, 0, 0, 1f));
+                pxMap2D.setPixel(i%getWidth(), (i/getWidth()), Color.rgba8888(0, 0, 0, 1f));
             else if (fishTexture[i] == 2)
-                pxMap2D.setPixel(i%width, (i/width), color);
+                pxMap2D.setPixel(i%getWidth(), (i/getWidth()), color);
         }
 
         Pixmap pxMap = new Pixmap(pxMap2D);
-        texture = new Texture(pxMap, Pixmap.Format.RGBA8888, false);
+        setTexture(new Texture(pxMap, Pixmap.Format.RGBA8888, false));
     }
 
-    private void applyForce()
+    /**
+     * The forces are applied to calculate the new location of the fish and it's rotation.
+     */
+    public void applyForce()
     {
-        velocity.scl(0);
-        force.scl(0);
-        force.add(vectorFromField());
-        force.scl(maxSpeed/mass); //THIS IS NO GOOD NEED CHANGE
-        velocity.add(force);
+        getVelocity().scl(0);
+        getForce().scl(0);
+        getForce().add(vectorFromField());
+        getForce().scl(getMaxSpeed()/getMass()); //THIS IS NO GOOD NEED CHANGE
+        getVelocity().add(getForce());
         if(foodTarget == null)
         {
-            velocity.add(desired);
-            dir = getDirectionDegrees(velocity);
+            getVelocity().add(getDesired());
+            setDir(getDirectionDegrees(getVelocity()));
         }
         else
         {
-            desired.x = foodTarget.getOriginX() - getOriginX();
-            desired.y = foodTarget.getOriginY() - getOriginY();
-            desired.nor();
-            desired.scl(maxSpeed /* adrenaline*/);
-            dir = getDirectionDegrees(desired);
-            velocity.add(desired);
+            getDesired().x = foodTarget.getOriginX() - getOriginX();
+            getDesired().y = foodTarget.getOriginY() - getOriginY();
+            getDesired().nor();
+            getDesired().scl(getMaxSpeed() /* adrenaline*/);
+            setDir(getDirectionDegrees(getDesired()));
+            getVelocity().add(getDesired());
         }
 
-        location.add(velocity);
+        getLocation().add(getVelocity());
 
         if(getOriginY() > Gdx.graphics.getHeight() - 1)
             setOriginY(1);
@@ -305,128 +265,12 @@ public class Fish{
     }
 
 
-    public float getX()
-    {
-        return location.x;
-    }
-
-    public float getY()
-    {
-        return location.y;
-    }
-
-    public int getOriginRelativeToFishX(){return originRelativeToFishX;}
-
-    public int getOriginRelativeToFishY(){return originRelativeToFishY;}
-
-    public TextureRegion getTextureRegion()
-    {
-        return textureRegion;
-    }
-
-    public void setTextureRegion(TextureRegion textureRegion)
-    {
-        this.textureRegion = textureRegion;
-    }
-
-    public Vector2 getVelocity()
-    {
-        return velocity;
-    }
-
-    /**
-     * Gets the vector in the flow field that the Fish's origin is on
-     * @return A vector in a flow field
-     */
-    private Vector2 vectorFromField()
-    {
-        if(getOriginX() >= Gdx.graphics.getWidth())
-            return new Vector2(1f,0f);
-
-        if(getOriginX() <= 0)
-            return  new Vector2(-1f, 0f);
-
-        if(getOriginY() >= Gdx.graphics.getHeight())
-            return new Vector2(0f, 1f);
-
-        if(getOriginY() <= 0)
-            return new Vector2(0f, -1f);
-
-        return game.getField().getFieldData()[(int) getOriginX() / game.getField().getTileWidth()][(int) getOriginY() /game.getField().getTileHeight()];
-    }
-
-    public float getOriginX()
-    {
-        return getX() + originRelativeToFishX;
-    }
-
-    public float getOriginY()
-    {
-        return getY() + originRelativeToFishY;
-    }
-
-    public void setOriginX(float x)
-    {
-        location.x -= getOriginX() - x;
-    }
-
-    public void setOriginY(float y)
-    {
-        location.y -= getOriginY() - y;
-    }
-
-    public float getDir() {
-        return dir;
-    }
-
-    public void draw()
-    {
-        game.getBatch().draw(getTextureRegion(), getX(), getY(), getOriginRelativeToFishX(), getOriginRelativeToFishY(), getTexture().getWidth(), getTexture().getHeight(), 1,1, getDir());
-    }
-
-    /**
-     * Will return the degree that the fish is facing in radian
-     * @return degree that the fish is facing in radian
-     */
-    private float getDirection(Vector2 vec)
-    {
-        return MathUtils.atan2(vec.y,vec.x) - (float)Math.PI/2;
-    }
-
-    /**
-     * Will get the degree that the fish is facing in degrees
-     * @param vec Vector we want to check tan(y/x)to degrees
-     * @return inclination degree
-     */
-    private float getDirectionDegrees(Vector2 vec)
-    {
-        return (float)Math.toDegrees(getDirection(vec));
-    }
-
-    public Food getFoodTarget() {
-        return foodTarget;
-    }
-
     public int getId() {
         return id;
     }
 
     public boolean isDead() {
         return dead;
-    }
-
-    public float getSight() {
-        return sight;
-    }
-
-    public float getSightNormalized()
-    {
-        return (getSight() - 10)/40;
-    }
-
-    public float getMaxSpeed()
-    {
-        return maxSpeed;
     }
 
     public Fish getParent() {
@@ -446,7 +290,22 @@ public class Fish{
         return birthTime;
     }
 
-    public int getFoodAte() {
-        return foodAte;
+
+    public Food getFoodTarget() {
+        return foodTarget;
+    }
+
+    public void setFoodTarget(Food foodTarget) {
+        this.foodTarget = foodTarget;
+    }
+
+    /**
+     * The sight normalized is the sight value scaled between 0 and 1.
+     * Normally the sight value is the radius that a Creature can see and is between 10 and 50.
+     * @return the sight value between 0 and one
+     */
+    public float getSightNormalized()
+    {
+        return (getSight() - MIN_SIGHT_VALUE)/MAX_SIGHT_VALUE;
     }
 }
