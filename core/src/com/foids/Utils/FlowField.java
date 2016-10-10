@@ -1,9 +1,8 @@
-package com.foids;
+package com.foids.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-
-import java.util.Random;
+import com.foids.Utils.OpenSimplexNoise;
 
 /**
  * Will create a grid with Perlin noise's Simplex (new version of PN) random vectors.

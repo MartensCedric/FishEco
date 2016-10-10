@@ -446,7 +446,6 @@ public class Fish{
         return birthTime;
     }
 
-
     public int getFoodAte() {
         return foodAte;
     }

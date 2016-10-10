@@ -9,12 +9,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.Queue;
+import com.foids.Utils.FlowField;
+import com.foids.Utils.OpenSimplexNoise;
 import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
 import com.foids.commands.DeathInfo;
 import com.foids.life.Egg;
 import com.foids.life.Fish;
 import com.foids.life.Food;
+import com.foids.life.Shark;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -54,6 +57,9 @@ public class FishEco extends ApplicationAdapter {
 	private long numberOfFrames;
 	private byte updateCounter;
 
+	private Shark shark;
+
+
 	//TODO LIST
 	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
 	//OPTIMIZE!!
@@ -67,6 +73,8 @@ public class FishEco extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+		this.shark = new Shark(this);
 		numberOfFrames = 0;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -162,6 +170,8 @@ public class FishEco extends ApplicationAdapter {
 		for(Fish fish : fishList)
 			fish.draw();
 
+		shark.draw();
+
 		commandManager.draw();
 		batch.end();
 	}
@@ -217,6 +227,7 @@ public class FishEco extends ApplicationAdapter {
 
 		}
 
+		shark.update();
 		cam.update();
 
 	}
