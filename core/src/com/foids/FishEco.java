@@ -32,6 +32,8 @@ public class FishEco extends ApplicationAdapter {
 	private final int START_FISH_COUNT = 25;
 	private final int START_FOOD_COUNT = 20;
 
+	private final String SAVE_PATH = "E:/Data/fishTree.txt";
+
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 
@@ -58,6 +60,8 @@ public class FishEco extends ApplicationAdapter {
 	private byte updateCounter;
 
 	private Shark shark;
+
+
 
 
 	//TODO LIST
@@ -109,42 +113,44 @@ public class FishEco extends ApplicationAdapter {
 		inputManager = new InputManager(commandManager, this);
 		Gdx.input.setInputProcessor(inputManager);
 
-        PrintWriter clearWriter = null;
-        try {
-            clearWriter = new PrintWriter("N:/Data/fishTree.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        clearWriter.print("");
-        clearWriter.close();
+		if(new File(SAVE_PATH).exists()) {
+			PrintWriter clearWriter = null;
+
+			try {
+
+				clearWriter = new PrintWriter(SAVE_PATH);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			clearWriter.print("");
+			clearWriter.close();
 
 
-        Thread fileWriter = new Thread(() ->
-        {
-            BufferedWriter writer = null;
+			Thread fileWriter = new Thread(() ->
+			{
+				BufferedWriter writer = null;
 
 
-            while(true)
-            {
-                try {
-                    Thread.sleep(10000);
-                    writer = new BufferedWriter(new FileWriter("N:/Data/fishTree.txt", true));
-                    while(deathList.size != 0)
-                    {
-                        writer.write(deathList.removeFirst().toString());
-                        writer.newLine();
-                    }
-                    writer.close();
+				while (true) {
+					try {
+						Thread.sleep(10000);
+						writer = new BufferedWriter(new FileWriter(SAVE_PATH, true));
+						while (deathList.size != 0) {
+							writer.write(deathList.removeFirst().toString());
+							writer.newLine();
+						}
+						writer.close();
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 
-        fileWriter.start();
+			fileWriter.start();
+		}
 	}
 
 	@Override

@@ -12,7 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../core/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../core/build" />
     </content>
-    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx:1.9.4" level="project" />
   </component>

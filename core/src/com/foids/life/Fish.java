@@ -174,16 +174,15 @@ public class Fish extends Creature{
             {
                 foodTarget = null;
             }
-
         }
 
         crave(energyLossSpeed);
 
         if(getBelly() <= 0.10f)
         {
+            dead = true;
             System.out.println("Fish " + getId() + " has died of hunger.");
         }
-
 
         if(textureTimer + 2_000 < TimeUtils.millis())
         {
@@ -233,6 +232,7 @@ public class Fish extends Creature{
         getForce().add(vectorFromField());
         getForce().scl(getMaxSpeed()/getMass()); //THIS IS NO GOOD NEED CHANGE
         getVelocity().add(getForce());
+
         if(foodTarget == null)
         {
             getVelocity().add(getDesired());
@@ -243,7 +243,7 @@ public class Fish extends Creature{
             getDesired().x = foodTarget.getOriginX() - getOriginX();
             getDesired().y = foodTarget.getOriginY() - getOriginY();
             getDesired().nor();
-            getDesired().scl(getMaxSpeed() /* adrenaline*/);
+            getDesired().scl(getMaxSpeed());
             setDir(getDirectionDegrees(getDesired()));
             getVelocity().add(getDesired());
         }
