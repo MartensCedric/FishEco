@@ -32,8 +32,6 @@ public class FishEco extends ApplicationAdapter {
 	private final int START_FISH_COUNT = 25;
 	private final int START_FOOD_COUNT = 20;
 
-	private final String SAVE_PATH = "E:/Data/fishTree.txt";
-
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 
@@ -59,26 +57,9 @@ public class FishEco extends ApplicationAdapter {
 	private long numberOfFrames;
 	private byte updateCounter;
 
-	private Shark shark;
-
-
-
-
-	//TODO LIST
-	//FIX ORIGIN -> Use Sprite instead of SpriteBatch
-	//OPTIMIZE!!
-	//Groups
-
-	//PLANNED FEATURES
-	//Special Mutations : Specially Mutated fish will have a slightly different appeareance
-	//Special Mutations include : Egg-Eating, Shark-Friendly
-	//Other mutations affect speed, sight and digestion rate.
-
-
 	@Override
 	public void create () {
 
-		this.shark = new Shark(this);
 		numberOfFrames = 0;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -112,45 +93,6 @@ public class FishEco extends ApplicationAdapter {
 
 		inputManager = new InputManager(commandManager, this);
 		Gdx.input.setInputProcessor(inputManager);
-
-		if(new File(SAVE_PATH).exists()) {
-			PrintWriter clearWriter = null;
-
-			try {
-
-				clearWriter = new PrintWriter(SAVE_PATH);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			clearWriter.print("");
-			clearWriter.close();
-
-
-			Thread fileWriter = new Thread(() ->
-			{
-				BufferedWriter writer = null;
-
-
-				while (true) {
-					try {
-						Thread.sleep(10000);
-						writer = new BufferedWriter(new FileWriter(SAVE_PATH, true));
-						while (deathList.size != 0) {
-							writer.write(deathList.removeFirst().toString());
-							writer.newLine();
-						}
-						writer.close();
-
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
-			fileWriter.start();
-		}
 	}
 
 	@Override
@@ -175,8 +117,6 @@ public class FishEco extends ApplicationAdapter {
 
 		for(Fish fish : fishList)
 			fish.draw();
-
-		shark.draw();
 
 		commandManager.draw();
 		batch.end();
@@ -233,9 +173,7 @@ public class FishEco extends ApplicationAdapter {
 
 		}
 
-		shark.update();
 		cam.update();
-
 	}
 
 
