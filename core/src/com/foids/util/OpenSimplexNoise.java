@@ -1,4 +1,4 @@
-package com.foids.Utils;
+package com.foids.util;
 /*
  * OpenSimplex Noise in Java.
  * by Kurt Spencer

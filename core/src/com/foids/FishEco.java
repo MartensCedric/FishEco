@@ -3,29 +3,37 @@ package com.foids;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Queue;
-import com.foids.Utils.FlowField;
-import com.foids.Utils.OpenSimplexNoise;
+import com.foids.util.FlowField;
+import com.foids.util.OpenSimplexNoise;
 import com.foids.commands.CommandManager;
 import com.foids.commands.InputManager;
 import com.foids.commands.DeathInfo;
 import com.foids.life.Egg;
 import com.foids.life.Fish;
 import com.foids.life.Food;
-import com.foids.life.Shark;
 
-import java.io.*;
 import java.util.LinkedList;
 import java.util.Random;
+
+import static com.badlogic.gdx.graphics.GL20.GL_TEXTURE0;
 
 /**
  * Main game class
  * Created by Cedric on 2016-09-21.
+ *
+ * Update 2018-03-11
+ * To anyone wanting to read the code of this program... think again!
+ * The code is absolutely disgusting.
+ * You have been warned!
  */
 public class FishEco extends ApplicationAdapter {
 
@@ -34,6 +42,8 @@ public class FishEco extends ApplicationAdapter {
 
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
+
+	private float timef = 0f;
 
 	private LinkedList<Fish> fishList;
 	private LinkedList<Food> foodList;
@@ -55,10 +65,24 @@ public class FishEco extends ApplicationAdapter {
 
 	private FlowField field;
 	private long numberOfFrames;
-	private byte updateCounter;
+
+	private AssetManager assetManager;
+	private ShaderProgram waterRefractionShader;
 
 	@Override
-	public void create () {
+	public void create ()
+	{
+		assetManager = new AssetManager();
+		assetManager.load("distortion.jpg", Texture.class);
+		assetManager.finishLoading();
+
+		ShaderProgram.pedantic = false;
+
+		String defaultVertex = Gdx.files.internal("shaders/default.vs.glsl").readString();
+		String waterRefraction = Gdx.files.internal("shaders/water.fs.glsl").readString();
+		waterRefractionShader = new ShaderProgram(defaultVertex, waterRefraction);
+
+		if (!waterRefractionShader.isCompiled()) throw new GdxRuntimeException("Couldn't compile shader: " + waterRefractionShader.getLog());
 
 		numberOfFrames = 0;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -75,13 +99,9 @@ public class FishEco extends ApplicationAdapter {
 		//We create the water currents
 		field = new FlowField();
 
-
 		//Set the dimensions of the fish
 		foidWidth = 5;
 		foidHeight = 9;
-
-		//This is used to change the flow field, currently obsolete
-		updateCounter = 0;
 
 		spawnFish();
 		spawnFood();
@@ -100,28 +120,66 @@ public class FishEco extends ApplicationAdapter {
 
 		update();
 
+		timef += Gdx.graphics.getDeltaTime();
+
 		Gdx.gl.glClearColor(0, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.setProjectionMatrix(cam.combined);
-
 		batch.begin();
-		//Drawing background
+		waterRefractionShader.begin();
+		waterRefractionShader.setUniformf("timef", timef);
+		waterRefractionShader.setUniformi("u_refraction", 1);
+		waterRefractionShader.setUniformf("world_x", 0);
+		waterRefractionShader.setUniformf("world_y", 0);
+		waterRefractionShader.setUniformf("screen_width", Gdx.graphics.getWidth());
+		waterRefractionShader.setUniformf("screen_height", Gdx.graphics.getHeight());
+		waterRefractionShader.end();
+
+		assetManager.get("distortion.jpg", Texture.class).bind(1);
+
+		batch.setShader(waterRefractionShader);
+
 		batch.draw(background, 0, 0);
+		Gdx.gl.glActiveTexture(GL_TEXTURE0);
+		batch.setShader(null);
 
 		for(Food food : foodList)
+		{
 			food.draw();
+		}
 
 		for(Egg egg : eggList)
+		{
 			egg.draw();
+		}
+
 
 		for(Fish fish : fishList)
+		{
 			fish.draw();
+		}
 
 		commandManager.draw();
+		batch.flush();
 		batch.end();
 	}
 
+	/*
+	private void setShaderWorldCoords(float x, float y)
+	{
+		waterRefractionShader.begin();
+		waterRefractionShader.setUniformf("timef", timef);
+		waterRefractionShader.setUniformi("u_refraction", 1);
+		waterRefractionShader.setUniformf("world_x", x);
+		waterRefractionShader.setUniformf("world_y", y);
+		waterRefractionShader.setUniformf("screen_width", Gdx.graphics.getWidth());
+		waterRefractionShader.setUniformf("screen_height", Gdx.graphics.getHeight());
+		waterRefractionShader.end();
+
+		assetManager.get("distortion.jpg", Texture.class).bind(1);
+	}
+*/
 	@Override
 	public void dispose () {
 		batch.dispose();
